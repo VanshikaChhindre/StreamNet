@@ -76,7 +76,7 @@ const registerUser = asyncHandler(
 const loginUser = asyncHandler(async(req, res)=>{
     //req body -> user
     //email or username validation
-    //find the user in db
+    //find the user in database
     //password check
     //access and refresh token
     //send cookies
