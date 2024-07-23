@@ -25,11 +25,12 @@ const userSchema = new Schema(
             trim: true,
         },
         avatar: {
-            type: String,
-            required: true,
+            url: { type: String, required: true },
+            public_id: { type: String, required: true }
         },
         coverImage: {
-            type: String,
+            url: { type: String, required: true },
+            public_id: { type: String, required: true }
         },
         watchHistory:{
             type: Schema.Types.ObjectId,
