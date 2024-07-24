@@ -1,9 +1,9 @@
-import { User } from '../models/user.model'
-import {uploadToCloudinary} from '../utils/cloudinary'
-import {asyncHandler} from '../utils/asyncHandler'
-import {ApiError} from '../utils/ApiErrors'
-import {ApiResponse} from '../utils/ApiResponse'
-import { trusted } from 'mongoose'
+import { User } from '../models/user.model.js'
+import {uploadToCloudinary} from '../utils/cloudinary.js'
+import {asyncHandler} from '../utils/asyncHandler.js'
+import {ApiError} from '../utils/ApiErrors.js'
+import {ApiResponse} from '../utils/ApiResponse.js'
+
 
 const generateAccessAndRefreshToken = async(userId) =>{
     try {
