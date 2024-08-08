@@ -2,9 +2,24 @@ import React from 'react'
 import { useSelector } from 'react-redux'
 import { Link } from 'react-router-dom'
 import { selectCurrentUser } from '../features/auth/authSlice'
+import { useDispatch } from 'react-redux'
+import { logOut } from '../features/auth/authSlice'
+import { useLogoutMutation } from '../features/auth/authApiSlice'
 
 const Navbar = () => {
   const user = useSelector(selectCurrentUser)
+  const dispatch = useDispatch()
+  const [logout] = useLogoutMutation()
+
+  const logoutHandler = async() =>{
+    try {
+      await logout().unwrap(); 
+      dispatch(logOut()); 
+    } catch (error) {
+      console.error('Logout failed:', error);
+  }
+}
+
 
   const sideBarItems = [
     {to:'/', name:'Home'},
@@ -39,13 +54,13 @@ const Navbar = () => {
     )
     )}
     </span>
-      <div className='w-full h-10 border border-slate-700 text-white flex items-center justify-center'>Settings</div> 
+    {user &&  <button className='w-full h-10 border border-slate-700 text-white flex items-center justify-center'
+      onClick={logoutHandler}>Logout</button>}
+     
     </section> 
    
     </div>
   )
 }
 
-export default Navbar
-
-  
+export default Navbar;

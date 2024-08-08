@@ -26,6 +26,15 @@ const uploadToCloudinary = async (localFilePath)=>{
     }
 }
 
+const getVideoMetadata = async (publicId) => {
+  try {
+    const result = await cloudinary.api.resource(publicId, { resource_type: 'video', media_metadata: true, });
+    return result.duration; // Duration in seconds
+  } catch (error) {
+    console.error('Error fetching video metadata:', error);
+  }
+};
+
 const deleteFromCloudinary = async (publicId) => {
     try {
       if (!publicId) return null
@@ -36,7 +45,7 @@ const deleteFromCloudinary = async (publicId) => {
   };
 
 
-export {uploadToCloudinary,  deleteFromCloudinary}
+export {uploadToCloudinary, getVideoMetadata, deleteFromCloudinary}
 
 
   
