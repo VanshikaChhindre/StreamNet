@@ -1,5 +1,6 @@
 import React from 'react'
 import { Form, Link, useNavigate } from 'react-router-dom'
+import axios from 'axios'
 import {useForm, Controller} from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -35,7 +36,7 @@ const Signup = () => {
 
     const registerUser = async(data)=>{
       
-      const formData = new FormData();
+       const formData = new FormData();
         formData.append('fullName', data.fullName);
         formData.append('username', data.username);
         formData.append('email', data.email);
@@ -44,6 +45,7 @@ const Signup = () => {
         // Append file inputs
         if (data.avatar && data.avatar[0]) {
             formData.append('avatar', data.avatar[0]);
+            
         } else {
           console.error("Avatar file not found");
       }
@@ -51,8 +53,10 @@ const Signup = () => {
         if (data.coverImage && data.coverImage[0]) {
             formData.append('coverImage', data.coverImage[0]);
         }
+        
+     
 
-         try {
+          /* try {
           const response = await signup(formData).unwrap();
           console.log("Signup successful:", response.data);
           dispatch(setCredentials(response));
@@ -60,7 +64,16 @@ const Signup = () => {
           reset();
       } catch (error) {
           console.error("Signup failed:", error);
-      } 
+      }    */
+       try {
+       const response = await axios.post(`http://localhost:4000/api/v1/users/register`, formData);
+        console.log("sign up successful");
+       
+          navigate('/login');
+          reset();
+       } catch (error) {
+        console.log(error.message)
+       } 
   };
       
     

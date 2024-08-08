@@ -38,14 +38,14 @@ const Channel = () => {
             <div className='w-1/4 h-full  flex items-center justify-center'>
 
               <pfp className='w-44 h-44 rounded-full bg-cover bg-center'
-              style={{backgroundImage: `url('https://images.unsplash.com/photo-1722109005676-583a67dd069f?q=80&w=1587&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`}}
-              ></pfp>
+             style={{ backgroundImage: `url('${user?.avatar?.url}')` }}>
+              </pfp>
             </div>
 
             <div className='w-[75%] h-full  p-5 flex items-center justify-between'>
               <div className=' flex flex-col'>
-              <h1 className='text-3xl font-semibold'>Salai Inong</h1>
-              <h1 className='text-xl'>@salaiinong</h1>
+              <h1 className='text-3xl font-semibold'>{user.fullName}</h1>
+              <h1 className='text-xl'>@{user.username}</h1>
               <h1 className='text-lg'>111.2K subscribers</h1>
               </div>
 
