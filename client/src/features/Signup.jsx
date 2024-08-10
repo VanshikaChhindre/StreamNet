@@ -1,12 +1,10 @@
 import React from 'react'
-import { Form, Link, useNavigate } from 'react-router-dom'
+import { Link, useNavigate } from 'react-router-dom'
 import axios from 'axios'
-import {useForm, Controller} from 'react-hook-form'
+import {useForm} from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
 import Input from '../components/Input'
-
-import { setCredentials } from './auth/authSlice'
 import { useDispatch } from 'react-redux'
 import { useSignupMutation} from './auth/authApiSlice'
 
@@ -24,12 +22,9 @@ const schema = z.object({
 
 const Signup = () => {
 
-    
-    const dispatch = useDispatch();
     const navigate = useNavigate();
-    const [signup, { isLoading, isSuccess, isError, error }] = useSignupMutation();
 
-    const { register, handleSubmit, reset, setValue, formState:{errors, isValid}} = useForm({
+    const { register, handleSubmit, reset, formState:{errors, isValid}} = useForm({
         resolver: zodResolver(schema),
         mode: "onChange",})
 
