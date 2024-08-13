@@ -2,13 +2,14 @@ import React from 'react'
 import { useForm } from 'react-hook-form';
 import Input from './Input';
 import { useDropzone } from 'react-dropzone'
+import { useUploadMutation } from '../features/auth/authApiSlice';
 
 
 const Video = () => {
 
   const { register, handleSubmit, watch, setValue, reset, formState: { errors, isValid} } = useForm()
   const watchedVideoFile = watch('videoFile');
-  const watchedThumbnail = watch('thumbnail');
+  const watchedThumbnail = watch('thumbnail'); 
 
   register('videoFile', { required: true, validate: (value) => value.size > 0 });
   register('thumbnail', { required: true, validate: (value) => value.size > 0 });
@@ -27,32 +28,43 @@ const Video = () => {
       setValue('thumbnail', acceptedFiles[0]);
     },
     multiple: false,
-  });
+  }); 
 
   const videoFileUrl = watchedVideoFile ? URL.createObjectURL(watchedVideoFile) : null;
-  const thumbnailUrl = watchedThumbnail ? URL.createObjectURL(watchedThumbnail) : null;
+  const thumbnailUrl = watchedThumbnail ? URL.createObjectURL(watchedThumbnail) : null; 
 
-  const uploadVideo = (data)=>{
-    console.log("helloe")
+  const [upload, {isLoading, isError, isSuccess}] = useUploadMutation()
+
+  const uploadVideo = async(data)=>{
     console.log(data)
     const formData = new FormData();
     formData.append("title", data.title)
     formData.append("description", data.description)
     formData.append("thumbnail", data.thumbnail)
     formData.append("videoFile", data.videoFile)
-    reset()
 
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}:`, value);
+   }
+
+    try {
+      const response = await upload(formData).unwrap();
+      if(response) console.log("Video uploaded successfully!")
+      
+    } catch (error) {
+      console.log(error.message)
+    }
+    reset();
   }
 
   return (
     <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end'>
         <main className='w-[80vw] min-h-[100vh] bg-slate-900 flex flex-col px-36 py-10'>
 
-          <form onSubmit={(e) => {
-                console.log('Form submitted');
-                handleSubmit(uploadVideo)(e);
-              }} className='mt-24 z-40'>
-            <div
+          <form onSubmit={
+            handleSubmit(uploadVideo)}
+            className='mt-24 z-40'>
+             <div
               {...getRootProps({ className: 'border-2 border-dashed border-gray-300 rounded-md p-4 gap-4 text-center cursor-pointer hover:border-gray-500 flex flex-col items-center justify-center'})}
               >
                 <input {...getInputProps()} />
@@ -84,34 +96,31 @@ const Video = () => {
                 />
               </div>
             )}
-          </div>
+          </div> 
+
 
            <Input
            label = "Title"
            labelClassName = "text-white mt-4"
            placeholder = "Enter video title"
-           {...register('title', { required: true })}
+           name = "title"
+           {...register("title", { required: true })}
            />
            {errors.title && <p className="text-red-400">{errors.title.message}</p>}
 
-            
-           <Input
-           textArea
-           label = "Description"
-           labelClassName = "text-white"
-           placeholder = "Enter video description"
-           name= "description"
-           {...register('description', { required: true })}
-           />
-           {errors.description && <p className="text-red-400">{errors.description.message}</p>}
+           <label className='text-white inline-block mb-1 pl-2' htmlFor='description'>Description</label>
+           <textarea
+            rows="4"
+            className={` w-full border border-gray-300 rounded-md p-2 outline-none `}
+            placeholder="Enter your message here"
+            name = "description"
+            {...register("description", { required: true })}>
+            </textarea> 
+            {errors.description && <p className="text-red-400">{errors.description.message}</p>}
 
            <button type="submit" className="bg-blue-500 text-white p-2">
             Submit
           </button>
-          {console.log('Form is valid:', isValid)}
-          {console.log("errors", errors)}
-          
-         
 
             
           </form>

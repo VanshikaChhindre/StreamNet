@@ -6,6 +6,7 @@ import { deleteVideo, getVideoById, publishAVideo, updateVideo } from "../contro
 const router = Router()
 
 router.route("/uploadvideo").post(
+    verifyJWT,
     upload.fields([
         {
             name: "videoFile",

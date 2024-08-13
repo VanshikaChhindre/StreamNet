@@ -10,6 +10,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
            
           }),
         }),
+
         login: builder.mutation({
           query: (credentials) => ({
             url: '/api/v1/users/login',
@@ -17,10 +18,19 @@ export const authApiSlice = apiSlice.injectEndpoints({
             body: { ...credentials }
           }),
         }),
+
         logout: builder.mutation({
           query: ()=>({
             url: '/api/v1/users/logout',
             method: 'POST'
+          })
+        }),
+
+        upload: builder.mutation({
+          query: (formData) => ({
+            url: '/api/v1/videos/uploadvideo',
+            method: 'POST',
+            body: formData
           })
         })
       }),
@@ -28,5 +38,5 @@ export const authApiSlice = apiSlice.injectEndpoints({
     
 
 
-export const { useSignupMutation, useLoginMutation, useLogoutMutation } = authApiSlice;
+export const { useSignupMutation, useLoginMutation, useLogoutMutation, useUploadMutation } = authApiSlice;
 

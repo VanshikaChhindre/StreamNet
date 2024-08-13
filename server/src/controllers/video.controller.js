@@ -40,10 +40,15 @@ const getAllVideos = asyncHandler(async (req, res) => {
 })
 
 const publishAVideo = asyncHandler(async (req, res) => {
+   
     //test ok!
-    const { title, description} = req.body
-    if(!title && !description){
+    const { title, description } = req.body
+   
+    if(!title){
         throw new ApiError(400, "title and description are required.")
+    }
+    if(!description){
+        throw new ApiError(400, "desc req")
     }
    
      const videoFileLocalPath = req.files?.videoFile[0]?.path;

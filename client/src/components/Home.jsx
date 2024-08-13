@@ -35,10 +35,10 @@ const Home = () => {
         <div className='w-[79vw] min-h-[100vh] bg-slate-950 flex flex-col'>
         <section className='w-full h-16 bg-slate-400 flex mt-[4rem] z-40'>
             <span className='w-1/2 h-full flex'>
-                <button className={` w-[90%] h-full flex items-center justify-center bg-slate-800`} onClick={()=>setOption("videos")}>
+                <button className={`${user? 'w-[90%]' : 'w-full'} w-full h-full flex items-center justify-center bg-slate-800`} onClick={()=>setOption("videos")}>
                 Videos
                 </button>
-                <Link to='/add-video' className='w-[10%] h-full text-white bg-black text-3xl flex items-center justify-center'>+</Link>
+              {user && ( <Link to='/add-video' className='w-[10%] h-full text-white bg-black text-3xl flex items-center justify-center'>+</Link>)}
             </span>
             
              <span className='w-1/2 h-full flex'>
