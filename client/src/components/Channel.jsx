@@ -22,6 +22,8 @@ const Channel = () => {
 
   ]
 
+  
+
     const [option, setOption] = useState("videos");
 
    
@@ -82,7 +84,7 @@ const Channel = () => {
              <div className='w-full h-full bg-slate-950 flex p-5 gap-6 flex-wrap '>
              {videos.map((item, index)=>(
              <card key={index} className='w-[20rem] h-[14rem] bg-slate-900 flex flex-col'>
-                 <span className='w-full h-[70%]  flex items-center justify-center'>video</span>
+                 <span className='w-full h-[70%]  flex items-center justify-center bg-cover'>video</span>
                  <span className='w-full h-[30%] flex items-center justify-center border-t border-slate-400'>{item.title}</span>
              </card>
              ))}

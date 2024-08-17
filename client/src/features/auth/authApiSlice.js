@@ -32,11 +32,27 @@ export const authApiSlice = apiSlice.injectEndpoints({
             method: 'POST',
             body: formData
           })
-        })
+        }),
+
+        allvideos: builder.query({
+          query: () => '/api/v1/videos/allvideos',
+        }),
+
+        getVideoById: builder.query({
+          query: (id) => `/api/v1/videos/getvideo/${id}`,
+        }),
       }),
     });
     
 
 
-export const { useSignupMutation, useLoginMutation, useLogoutMutation, useUploadMutation } = authApiSlice;
+export const { 
+  useSignupMutation, 
+  useLoginMutation, 
+  useLogoutMutation, 
+  useUploadMutation, 
+  useAllvideosQuery,
+  useGetVideoByIdQuery
+
+} = authApiSlice;
 

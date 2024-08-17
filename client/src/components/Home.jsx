@@ -1,26 +1,19 @@
-import React, {useState} from 'react'
+import React, {useEffect, useState} from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { selectCurrentUser } from '../features/auth/authSlice';
+import { useAllvideosQuery } from '../features/auth/authApiSlice';
 
 
 const Home = () => {
 
     const user = useSelector(selectCurrentUser)
+    const { data, isLoading, isError, isSuccess } = useAllvideosQuery();
 
     const [option, setOption] = useState("videos"); 
-    const videos = [
-        {title: 'video1'},
-        {title: 'video2'},
-        {title: 'video3'},
-        {title: 'video2'},
-        {title: 'video2'},
-        {title: 'video2'},
-        {title: 'video2'},
-        {title: 'video3'},
-        {title: 'video3'},
-        {title: 'video3'},
-    ]
+
+    const [videos, setVideos] = useState([])
+   
 
     const tweets = [
         {tweet: 'tweet1'},
@@ -29,6 +22,13 @@ const Home = () => {
         {tweet: 'tweet4'},
         {tweet: 'tweet5'},
       ]
+
+      useEffect(() => {
+        if (isSuccess) {
+          const videos = data?.data?.docs || [];
+          setVideos(videos);
+        }
+      })
 
   return (
     <div className='w-full min-h-screen bg-slate-950 flex flex-col items-end justify-end'>
@@ -52,10 +52,13 @@ const Home = () => {
           {option === "videos"? (
             <section className='w-full h-full bg-slate-950 flex p-5 gap-6 flex-wrap '>
             {videos.map((item, index)=>(
-            <card key={index} className='w-[20rem] h-[14rem] bg-slate-900 flex flex-col'>
-                <span className='w-full h-[70%]  flex items-center justify-center'>video</span>
+            <Link to={`/video/${item._id}`} key={index} className='z-40'>
+            <card className='w-[20rem] h-[14rem] bg-slate-900 flex flex-col overflow-hidden rounded-md z-40'>
+                <span className='w-full h-[70%]  flex items-center justify-center bg-cover'
+                 style={{ backgroundImage: `url(${item.thumbnail.url})` }}></span>
                 <span className='w-full h-[30%] flex items-center justify-center border-t border-slate-400'>{item.title}</span>
             </card>
+            </Link>
             ))}
             
             </section>

@@ -5,6 +5,7 @@ import { Home, Channel } from './components/exports'
 import Video from './components/Video'
 import Login from './features/Login'
 import Signup from './features/Signup'
+import VideoPlayer from './components/VideoPlayer'
 
 
 function App() {
@@ -19,6 +20,7 @@ function App() {
         <Route path='/' element={<Home/>}/>
         <Route path='/your-channel' element={<Channel/>}/>
         <Route path='/add-video' element={<Video/>}/>
+        <Route path='/video/:id' element={<VideoPlayer/>}/>
       </Route>
     </Routes>
     </div>

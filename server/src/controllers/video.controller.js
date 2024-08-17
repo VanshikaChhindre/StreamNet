@@ -7,37 +7,39 @@ import { getVideoMetadata, uploadToCloudinary } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
 
 const getAllVideos = asyncHandler(async (req, res) => {
-    const { page = 1, limit = 10, search, sortBy, sortType } = req.query //, userId
+    //ok tested
+    const { page = 1, limit = 10, search, sortBy, sortType } = req.query;
 
-    const query = { isPublished: true};
-    if(search){
-        query.title = { $regex : search, $options : 'i'}
+    const query = { isPublished: false };
+    
+    if (search) {
+        query.title = { $regex: search, $options: 'i' };
     }
-    /*  if(userId){
-        query.owner = userId
-     } */
-    const sort = {}
-    if(sortBy){
-        sort[sortBy] = sortType === 'desc'? -1 : 1;
-    } 
+
+    if (sortBy) {
+        const sort = { [sortBy]: sortType === 'desc' ? -1 : 1 };
+        pipeline.push({ $sort: sort });
+    }
+
+    const aggregateFn = Video.aggregate([{ $match: query }]);
 
     const options = {
-        page,
-        limit,
-        sort
+        page: Number(page),
+        limit: Number(limit),
+    };
+
+    try {
+        const videos = await Video.aggregatePaginate(aggregateFn, options);
+
+        return res.status(200).json(
+            new ApiResponse(200, videos, 'Unpublished videos fetched successfully!')
+        );
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({ error: error.message });
     }
+});
 
-    const aggregateFn = await Video.aggregate([{$match : query}]);
-        
-    const videos = await Video.aggregatePaginate(aggregateFn, options)
-
-    return res
-    .status(200)
-    .json(
-        new ApiResponse(200, videos, "search videos fetched!")
-    )
-        
-})
 
 const publishAVideo = asyncHandler(async (req, res) => {
    
@@ -170,7 +172,7 @@ const updateVideo = asyncHandler(async (req, res) => {
 })
 
 const deleteVideo = asyncHandler(async (req, res) => {
-    //test ok
+    //tested ok!
     const { videoId } = req.params
     if(!videoId){
         throw new ApiError(404, "Video id not found in url")
