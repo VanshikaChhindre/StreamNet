@@ -45,7 +45,7 @@ const deleteFromCloudinary = async (publicId) => {
   };
 
 
-export {uploadToCloudinary, getVideoMetadata, deleteFromCloudinary}
+export {cloudinary, uploadToCloudinary, getVideoMetadata, deleteFromCloudinary}
 
 
   

@@ -3,9 +3,14 @@ import { useForm } from 'react-hook-form';
 import Input from './Input';
 import { useDropzone } from 'react-dropzone'
 import { useUploadMutation } from '../features/auth/authApiSlice';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '../features/auth/authSlice';
 
 
 const Video = () => {
+
+  const user = useSelector(selectCurrentUser)
+  
 
   const { register, handleSubmit, watch, setValue, reset, formState: { errors, isValid} } = useForm()
   const watchedVideoFile = watch('videoFile');
@@ -42,6 +47,7 @@ const Video = () => {
     formData.append("description", data.description)
     formData.append("thumbnail", data.thumbnail)
     formData.append("videoFile", data.videoFile)
+    formData.append("userId", user._id)
 
     for (let [key, value] of formData.entries()) {
       console.log(`${key}:`, value);

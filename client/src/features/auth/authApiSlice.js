@@ -41,6 +41,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
         getVideoById: builder.query({
           query: (id) => `/api/v1/videos/getvideo/${id}`,
         }),
+
+        getVideoById: builder.query({
+          query: (id) => `/api/v1/videos/getvideo/${id}`,
+        }),
       }),
     });
     

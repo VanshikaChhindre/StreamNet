@@ -262,6 +262,20 @@ const getCurrentUser = asyncHandler(async(req, res) => {
     ))
 })
 
+/* const getUserById = asyncHandler(async(req, res) => {
+    const {id} = req.body
+    if(!id){
+        console.log("User not found");
+    }
+
+    const user = await User.aggregate([
+        {
+            $match: {
+                _id: id
+            }
+        }
+    ])
+}) */
 const updateAccountDetails = asyncHandler(async(req, res) => {
     const {fullName, email} = req.body
 

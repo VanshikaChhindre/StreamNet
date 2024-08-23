@@ -2,7 +2,7 @@
 import Layout from './Layout'
 import { Route, Routes } from 'react-router-dom'
 import { Home, Channel } from './components/exports'
-import Video from './components/Video'
+import Video from './components/VideoUpload'
 import Login from './features/Login'
 import Signup from './features/Signup'
 import VideoPlayer from './components/VideoPlayer'

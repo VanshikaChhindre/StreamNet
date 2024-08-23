@@ -5,6 +5,7 @@ import { ApiError } from "../utils/ApiErrors.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getVideoMetadata, uploadToCloudinary } from "../utils/cloudinary.js";
 import mongoose from "mongoose";
+import { cloudinary } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
     //ok tested
@@ -44,7 +45,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
 const publishAVideo = asyncHandler(async (req, res) => {
    
     //test ok!
-    const { title, description } = req.body
+    const { title, description, userId } = req.body
    
     if(!title){
         throw new ApiError(400, "title and description are required.")
@@ -82,6 +83,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
         videoFile: {url:videoFile.url,  public_id:videoFile.public_id},
         duration,
         thumbnail: {url:thumbnail.url,  public_id:thumbnail.public_id},
+        owner: userId,
     }) 
 
     if(createdVideo){
@@ -94,7 +96,7 @@ const publishAVideo = asyncHandler(async (req, res) => {
 })
 
 const getVideoById = asyncHandler(async (req, res) => {
-    //tested ok!
+   
     const { videoId } = req.params
 
     if(!videoId){
@@ -116,6 +118,21 @@ const getVideoById = asyncHandler(async (req, res) => {
     return res
     .status(200)
     .json(new ApiResponse(200, video, "Video fetched successfully"))
+
+    /* console.log("video id", video.url)
+
+    const videoUrl = cloudinary.url(video.public_id, {
+        resource_type: "video",
+        format: "mp4",
+        transformation: [{ streaming_profile: "full_hd" }],
+      });
+
+    console.log("Video fetched successfully!")
+    console.log("genetrated video url", videoUrl)
+ 
+    return res
+    .status(200)
+    .json(new ApiResponse(200, video, "Video fetched successfully"))*/
     
   //TODO: get video by id
 })
