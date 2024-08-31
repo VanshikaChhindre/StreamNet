@@ -21,7 +21,7 @@ const Login = () => {
 
     const { register, handleSubmit, reset, formState:{errors, isValid}} = useForm()
 
-    const [login, { isLoading, isSuccess, isError, error }] = useLoginMutation();
+   const [login, { isLoading, isSuccess, isError, error }] = useLoginMutation(); 
     const dispatch = useDispatch()
     const navigate = useNavigate()
 
@@ -33,14 +33,19 @@ const Login = () => {
       }
 
       try {
-         const response = await login(userData).unwrap();
-        console.log(response.data) 
+        const response = await login(userData).unwrap();
+        console.log(response)  
 
-        /* const response = await axios.post(`http://localhost:4000/api/v1/users/login`,  userData); */
+        /* const response = await axios.post(`http://localhost:4000/api/v1/users/login`,  userData); 
+        console.log(response.data); */
         console.log("Login in successful");
 
-        const {user, accessToken} = response.data;
+       /*  const {user, accessToken} = response.data.data; */
+        const accessToken = response.data.accessToken
+        const user = response.data.user
+
         dispatch(setCredentials({user:user, token: accessToken}))
+
         navigate('/')
         reset() 
       } catch (error) {

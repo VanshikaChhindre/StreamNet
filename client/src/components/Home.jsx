@@ -1,14 +1,14 @@
 import React, {useEffect, useState} from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { selectCurrentUser } from '../features/auth/authSlice';
+import { selectCurrentToken, selectCurrentUser } from '../features/auth/authSlice';
 import { useAllvideosQuery } from '../features/auth/authApiSlice';
 
 
 const Home = () => {
 
     const user = useSelector(selectCurrentUser)
-    const { data, isLoading, isError, isSuccess } = useAllvideosQuery();
+    const { data, isLoading, isError, isSuccess, refetch } = useAllvideosQuery();
 
     const [option, setOption] = useState("videos"); 
 
@@ -28,7 +28,13 @@ const Home = () => {
           const videos = data?.data?.docs || [];
           setVideos(videos);
         }
-      })
+      }, [isSuccess, data])
+
+      useEffect(() => {
+        if (option === "videos") {
+            refetch(); // Refetch videos when the option changes to "videos"
+        }
+    }, [option, refetch]);
 
   return (
     <div className='w-full min-h-screen bg-slate-950 flex flex-col items-end justify-end'>
@@ -56,7 +62,8 @@ const Home = () => {
             <card className='w-[20rem] h-[14rem] bg-slate-900 flex flex-col overflow-hidden rounded-md z-40'>
                 <span className='w-full h-[70%]  flex items-center justify-center bg-cover'
                  style={{ backgroundImage: `url(${item.thumbnail.url})` }}></span>
-                <span className='w-full h-[30%] flex items-center justify-center border-t border-slate-400'>{item.title}</span>
+                <span className='w-full h-[30%] flex items-center justify-center border-t border-slate-400 text-white'>{item.title}</span>
+                <span></span>
             </card>
             </Link>
             ))}

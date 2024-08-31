@@ -7,7 +7,10 @@ const baseQuery = fetchBaseQuery({
     prepareHeaders: (headers, {getState}) => {
         const token = getState().auth.token
         if(token){
+            console.log("token found: ", token)
             headers.set("Authorization", `Bearer ${token}`)
+        }else{
+            console.log("token not found")
         }
         return headers
     }
@@ -22,6 +25,7 @@ const baseQueryWithReauth = async(args, api, extraOptions) => {
 
         const refreshResult = await baseQuery('/api/v1/users/refresh-token', api, extraOptions)
         console.log(refreshResult)
+        
         if(refreshResult?.data){
             const user = api.getState().auth.user
             //store new token

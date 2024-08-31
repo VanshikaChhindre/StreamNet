@@ -5,11 +5,13 @@ import { useDropzone } from 'react-dropzone'
 import { useUploadMutation } from '../features/auth/authApiSlice';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../features/auth/authSlice';
+import { useNavigate } from 'react-router-dom';
 
 
 const Video = () => {
 
   const user = useSelector(selectCurrentUser)
+  const navigate = useNavigate()
   
 
   const { register, handleSubmit, watch, setValue, reset, formState: { errors, isValid} } = useForm()
@@ -49,13 +51,11 @@ const Video = () => {
     formData.append("videoFile", data.videoFile)
     formData.append("userId", user._id)
 
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}:`, value);
-   }
 
     try {
       const response = await upload(formData).unwrap();
       if(response) console.log("Video uploaded successfully!")
+      navigate('/')
       
     } catch (error) {
       console.log(error.message)

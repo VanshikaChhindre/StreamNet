@@ -115,7 +115,7 @@ const getSubscribedChannels = asyncHandler(async (req, res) => {
     }
     
 
-    res.status(200).json(200, subscriberList, "Channels fetched successfully!")
+    res.status(200).json(200, channelList, "Channels fetched successfully!")
     
 })
 
