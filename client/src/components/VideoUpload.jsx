@@ -55,12 +55,11 @@ const Video = () => {
     try {
       const response = await upload(formData).unwrap();
       if(response) console.log("Video uploaded successfully!")
-      navigate('/')
-      
     } catch (error) {
       console.log(error.message)
     }
     reset();
+    navigate('/')
   }
 
   return (

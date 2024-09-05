@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
-import { selectCurrentToken, selectCurrentUser } from '../features/auth/authSlice';
+import { selectCurrentUser } from '../features/auth/authSlice';
 import { useAllvideosQuery } from '../features/auth/authApiSlice';
+import VideoCard from './VideoCard';
+
 
 
 const Home = () => {
@@ -11,9 +13,7 @@ const Home = () => {
     const { data, isLoading, isError, isSuccess, refetch } = useAllvideosQuery();
 
     const [option, setOption] = useState("videos"); 
-
     const [videos, setVideos] = useState([])
-   
 
     const tweets = [
         {tweet: 'tweet1'},
@@ -37,34 +37,40 @@ const Home = () => {
     }, [option, refetch]);
 
   return (
-    <div className='w-full min-h-screen bg-slate-950 flex flex-col items-end justify-end'>
-        <div className='w-[79vw] min-h-[100vh] bg-slate-950 flex flex-col'>
-        <section className='w-full h-16 bg-slate-400 flex mt-[4rem] z-40'>
+    <div className='w-full min-h-screen bg-background flex flex-col items-end justify-end'>
+        <div className='w-[80vw] min-h-[100vh] bg-background flex flex-col pt-5'>
+        <section className='w-full h-10 flex mt-[4rem] z-40  text-text'>
             <span className='w-1/2 h-full flex'>
-                <button className={`${user? 'w-[90%]' : 'w-full'} w-full h-full flex items-center justify-center bg-slate-800`} onClick={()=>setOption("videos")}>
-                Videos
+                <button className={`${user? 'w-[90%]' : 'w-full'} w-full h-full flex items-center justify-center `} onClick={()=>setOption("videos")}>
+                  <div className={`w-3/4 h-full ${option === "videos"? 'border-b-2 border-accent' : ''}`}>
+                    Videos
+                  </div>
                 </button>
-              {user && ( <Link to='/add-video' className='w-[10%] h-full text-white bg-black text-3xl flex items-center justify-center'>+</Link>)}
+              {/* {user && ( <Link to='/add-video' className='w-[10%] h-full text-white bg-black text-3xl flex items-center justify-center border-r border-gray-700'>+</Link>)} */}
             </span>
             
              <span className='w-1/2 h-full flex'>
-                <button className={`${user? 'w-[90%]' : 'w-full'} w-full h-full flex items-center justify-center bg-slate-700`} onClick={()=>setOption("tweets")}>
+                <button className={`${user? 'w-[90%]' : 'w-full'} w-full h-full flex items-center justify-center `} onClick={()=>setOption("tweets")}>
+                <div className={`w-3/4 h-full ${option === "tweets"? 'border-b-2 border-accent' : ''}`}>
                 Tweets
+                </div>
                 </button>
-                {user && (<Link to='#' className='w-[10%] h-full text-white bg-black text-3xl flex items-center justify-center'>+</Link>)}
+                {/* {user && (<Link to='#' className='w-[10%] h-full text-white bg-black text-3xl flex items-center justify-center'>+</Link>)} */}
             </span> 
           </section>
 
           {option === "videos"? (
-            <section className='w-full h-full bg-slate-950 flex p-5 gap-6 flex-wrap '>
+            <section className='w-full h-full bg-background flex p-5 gap-6 flex-wrap '>
             {videos.map((item, index)=>(
             <Link to={`/video/${item._id}`} key={index} className='z-40'>
-            <card className='w-[20rem] h-[14rem] bg-slate-900 flex flex-col overflow-hidden rounded-md z-40'>
-                <span className='w-full h-[70%]  flex items-center justify-center bg-cover'
-                 style={{ backgroundImage: `url(${item.thumbnail.url})` }}></span>
-                <span className='w-full h-[30%] flex items-center justify-center border-t border-slate-400 text-white'>{item.title}</span>
-                <span></span>
-            </card>
+              <VideoCard
+                thumbnail = {item.thumbnail.url}
+                duration = {item.duration}
+                title = {item.title}
+                username = {item.owner.username}
+                avatar = {item.owner.avatar?.url}
+                createdAt = {item.createdAt}
+              />
             </Link>
             ))}
             

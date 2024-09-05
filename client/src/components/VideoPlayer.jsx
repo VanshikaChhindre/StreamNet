@@ -12,9 +12,6 @@ const VideoPlayer = () => {
   if(isSuccess){
     console.log(data)
   }
-
-  
-
  
   return (
     <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end'>
@@ -23,7 +20,6 @@ const VideoPlayer = () => {
         {isSuccess && data.data ? (
         <div>
         <div className='w-[50rem] h-[28.1rem] bg-slate-200'>
-        
             <video
              controls 
              autoPlay

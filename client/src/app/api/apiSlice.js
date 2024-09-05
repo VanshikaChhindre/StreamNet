@@ -7,7 +7,6 @@ const baseQuery = fetchBaseQuery({
     prepareHeaders: (headers, {getState}) => {
         const token = getState().auth.token
         if(token){
-            console.log("token found: ", token)
             headers.set("Authorization", `Bearer ${token}`)
         }else{
             console.log("token not found")

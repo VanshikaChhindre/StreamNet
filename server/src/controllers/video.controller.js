@@ -17,12 +17,46 @@ const getAllVideos = asyncHandler(async (req, res) => {
         query.title = { $regex: search, $options: 'i' };
     }
 
+    const pipeline = [
+        { $match: query },
+        {
+            $lookup: {
+                from: 'users', // The collection name for users
+                localField: 'owner',
+                foreignField: '_id',
+                as: 'ownerDetails'
+            }
+        },
+        {
+            $unwind: {
+                path: '$ownerDetails',
+            }
+        },
+        {
+            $project: {
+                videoFile: 1,
+                thumbnail: 1,
+                title: 1,
+                description: 1,
+                duration: 1,
+                isPublished: 1,
+                owner: {
+                    _id: '$ownerDetails._id',
+                    avatar: '$ownerDetails.avatar',
+                    username: '$ownerDetails.username',
+                },
+                createdAt: 1,
+                updatedAt: 1
+            }
+        }
+    ];
+
     if (sortBy) {
         const sort = { [sortBy]: sortType === 'desc' ? -1 : 1 };
         pipeline.push({ $sort: sort });
     }
 
-    const aggregateFn = Video.aggregate([{ $match: query }]);
+    const aggregateFn = Video.aggregate(pipeline);
 
     const options = {
         page: Number(page),
