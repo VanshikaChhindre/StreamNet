@@ -45,6 +45,15 @@ export const authApiSlice = apiSlice.injectEndpoints({
         getVideoById: builder.query({
           query: (id) => `/api/v1/videos/getvideo/${id}`,
         }),
+
+        userChannel: builder.query({
+          query: (username) => `/api/v1/users/c/${username}`,
+        }),
+
+        userVideos: builder.query({
+          query: (userId) => `/api/v1/videos/allvideos/${userId}`,
+        })
+       
       }),
     });
     
@@ -56,7 +65,9 @@ export const {
   useLogoutMutation, 
   useUploadMutation, 
   useAllvideosQuery,
-  useGetVideoByIdQuery
+  useGetVideoByIdQuery,
+  useUserChannelQuery,
+  useUserVideosQuery,
 
 } = authApiSlice;
 

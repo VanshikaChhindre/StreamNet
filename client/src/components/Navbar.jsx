@@ -10,6 +10,7 @@ import { useTheme } from '../features/ThemeContext'
 
 const Navbar = () => {
   const user = useSelector(selectCurrentUser)
+ 
   const dispatch = useDispatch()
   const [logout] = useLogoutMutation()
   const location = useLocation();
@@ -29,7 +30,11 @@ const Navbar = () => {
 
   const sideBarItems = [
     {to:'/', name:'Home', Icon : <HomeIcon/>},
-    {to:'/your-channel', name:'Your channel', Icon : <ChannelIcon/>},
+    {
+      to: user ? `/your-channel/${user._id}` : '/your-channel',
+      name: 'Your channel',
+      Icon: <ChannelIcon />
+    },
     {to:'#', name:'Watched History', Icon : <HistoryIcon/>},
     {to:'#', name:'Tweet', Icon : <TweetIcon/>},
 
@@ -41,8 +46,8 @@ const Navbar = () => {
       <h1 className='w-1/4 h-full flex items-center text-2xl pl-28'>WeTube</h1>
       <input className='w-1/4 h-[40px] flex items-center justify-center border border-slate-600 rounded-2xl bg-background outline-none text-center' placeholder='search'></input>
       <span className='w-1/4 h-full flex items-center justify-end pr-5'>
-        {user?  (
-          <button onClick={toggleTheme} className="hidden lg:block">
+      {user? (
+          <button onClick={toggleTheme} className="lg:block">
            {theme === 'dark'? <LightMode className="w-9 h-9 text-white"/> : <NightMode className="w-7 h-7"/> }
           </button>
         )

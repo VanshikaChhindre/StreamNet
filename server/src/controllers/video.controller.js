@@ -4,19 +4,26 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { ApiError } from "../utils/ApiErrors.js";
 import { ApiResponse } from "../utils/ApiResponse.js";
 import { getVideoMetadata, uploadToCloudinary } from "../utils/cloudinary.js";
-import mongoose from "mongoose";
+import mongoose, { isValidObjectId } from "mongoose";
 import { cloudinary } from "../utils/cloudinary.js";
 
 const getAllVideos = asyncHandler(async (req, res) => {
     //ok tested
-    const { page = 1, limit = 10, search, sortBy, sortType } = req.query;
+    const { page = 1, limit = 10, search, sortBy = "createdAt", sortType = "desc", ownerId} = req.query;
 
     const query = { isPublished: false };
     
     if (search) {
         query.title = { $regex: search, $options: 'i' };
     }
-
+    
+    if (ownerId) {
+        if (!mongoose.Types.ObjectId.isValid(ownerId)) {
+            throw new ApiError(400, 'Invalid owner ID format');
+        }
+        query.owner = mongoose.Types.ObjectId(ownerId);
+    }
+    
     const pipeline = [
         { $match: query },
         {
@@ -32,6 +39,7 @@ const getAllVideos = asyncHandler(async (req, res) => {
                 path: '$ownerDetails',
             }
         },
+        
         {
             $project: {
                 videoFile: 1,
@@ -73,6 +81,35 @@ const getAllVideos = asyncHandler(async (req, res) => {
         console.error(error);
         return res.status(500).json({ error: error.message });
     }
+});
+
+const getUserVideos = asyncHandler(async(req, res)=>{
+    const { userId } = req.params;
+  const { page = 1, limit = 10, sortBy = "createdAt", sortType = "desc" } = req.query;
+
+  // Validate userId
+  if (!userId || !isValidObjectId(userId)) {
+    return res.status(400).json({ message: "Invalid or missing user ID" });
+  }
+
+    const query = { owner: userId };
+
+    // Sorting logic
+    const sort = { [sortBy]: sortType === "desc" ? -1 : 1 };
+
+    // Get the paginated videos using skip and limit
+    const videos = await Video.find(query)
+      .sort(sort)
+      .skip((page - 1) * limit)
+      .limit(Number(limit));
+
+      if(!videos){
+        throw new ApiError(500, "Could not fetch videos")
+      }
+
+    // Return the result directly
+    return res.status(200).json(new ApiResponse(200, videos, "user videos fetched"));
+  
 });
 
 
@@ -269,5 +306,6 @@ export {
     getVideoById,
     updateVideo,
     deleteVideo,
-    togglePublishStatus
+    togglePublishStatus,
+    getUserVideos
 }

@@ -18,7 +18,7 @@ function App() {
 
     <Route path='/' element={<Layout/>}>
         <Route path='/' element={<Home/>}/>
-        <Route path='/your-channel' element={<Channel/>}/>
+        <Route path='/your-channel/:userId?' element={<Channel/>}/>
         <Route path='/add-video' element={<Video/>}/>
         <Route path='/video/:id' element={<VideoPlayer/>}/>
       </Route>
