@@ -25,8 +25,8 @@ const VideoCard = ({
       };
 
   return (
-    <card className='w-[22rem] min-h-[14rem]  flex flex-col overflow-hidden z-40'>
-         <span className='w-full h-[12rem]  flex items-end justify-end p-2 bg-cover rounded-md'
+    <card className='w-[22rem] min-h-[14rem] rounded-md flex flex-col overflow-hidden z-40'>
+         <span className='w-full h-[12rem] flex items-end justify-end p-2 bg-cover rounded-md '
                style={{ backgroundImage: `url(${thumbnail})` }}>
                  <div className='bg-gray-800/85 min-w-6 h-6 rounded px-1 py-[2px] text-sm text-white'>{formatDuration(duration)}</div>
          </span>

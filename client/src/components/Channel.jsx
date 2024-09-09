@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react'
 import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../features/auth/authSlice';
-import { useParams } from 'react-router-dom';
+import { AddIcon } from '../assets/navicons';
 import { useUserChannelQuery, useUserVideosQuery } from '../features/auth/authApiSlice';
 import VideoCard from './VideoCard';
 
@@ -95,8 +95,11 @@ const Channel = () => {
           </div>
 
           {option === "videos"? (
-          <section className='w-full h-20  flex items-center justify-center z-40'>
-          <Link to='/add-video' className='w-28 h-10 bg-slate-700 flex items-center justify-center'>Add video</Link>
+          <section className='w-full h-14  flex items-center justify-center pt-5 px-3 z-40'>
+          <Link to='/add-video' className='w-32 h-10 text-text bg-secondary flex items-center justify-center gap-2 rounded-full'>
+          <AddIcon className='w-6 h-6'/>
+          <h5> Add video</h5>
+          </Link>
         </section>
         ):(
           <section className='w-full h-20  flex items-center justify-center z-40'>
@@ -104,9 +107,9 @@ const Channel = () => {
         </section>
         )}
 
-           <div className='w-full min-h-[25rem] bg-slate-950 p-5'>
+           <div className='w-full min-h-[25rem] px-3'>
             {option === "videos"? (
-             <div className='w-full h-full bg-slate-950 flex p-5 gap-6 flex-wrap '>
+             <div className='w-full h-full flex p-5 gap-6 flex-wrap '>
              {videos.map((item, index)=>(
             <Link to={`/video/${item._id}`} key={index} className='z-40'>
               <VideoCard

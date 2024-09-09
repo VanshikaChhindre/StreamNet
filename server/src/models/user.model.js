@@ -32,10 +32,13 @@ const userSchema = new Schema(
             url: { type: String },
             public_id: { type: String}
         },
-        watchHistory:{
-            type: Schema.Types.ObjectId,
-            ref: "Video"
-        },
+        watchHistory:[
+            {
+                type: mongoose.Schema.Types.ObjectId,
+                ref: 'Video',
+                default: [] // Default to an empty array
+            }
+        ],
         password: {
             type: String,
             required: [true, "password is required!"]

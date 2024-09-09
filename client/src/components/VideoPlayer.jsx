@@ -1,10 +1,13 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useParams } from 'react-router-dom';
-import { useGetVideoByIdQuery } from '../features/auth/authApiSlice';
+import { useGetVideoByIdQuery, useAddVideoToHistoryMutation } from '../features/auth/authApiSlice';
+import { useSelector } from 'react-redux';
+import { selectCurrentUser } from '../features/auth/authSlice';
 
 
 const VideoPlayer = () => {
-    const { id } = useParams(); // Access the dynamic id from the URL
+ /*  const user = useSelector(selectCurrentUser)
+  const { id } = useParams(); // Access the dynamic id from the URL
    
   const { data, isLoading, isError, isSuccess } = useGetVideoByIdQuery(id); 
 
@@ -12,6 +15,42 @@ const VideoPlayer = () => {
   if(isSuccess){
     console.log(data)
   }
+
+  
+    if(user){
+      const { data : userVideo, isSuccess : isUserVideoSuccess } = useAddVideoToHistoryMutation(id)
+
+      useEffect(()=>{
+      if(isUserVideoSuccess)(
+        console.log("Video added to history \n", userVideo)
+      )}, [])
+    }
+ 
+
+ */
+    const user = useSelector(selectCurrentUser); // Get the current user from Redux
+    const { id } = useParams(); // Access the dynamic id from the URL
+     
+    const { data, isLoading, isError, isSuccess } = useGetVideoByIdQuery(id);
+    const [addVideoToHistory, { isSuccess: isUserVideoSuccess }] = useAddVideoToHistoryMutation(); // Destructure mutation
+  
+    useEffect(() => {
+      if (isSuccess) {
+        console.log('Video data:', data);
+      }
+  
+      if (user && isSuccess) {
+        addVideoToHistory(id); 
+      }
+    }, [id, isSuccess, user, addVideoToHistory]); 
+  
+    useEffect(() => {
+      if (isUserVideoSuccess) {
+        console.log('Video added to history');
+      }
+    }, [isUserVideoSuccess]);
+  
+  
  
   return (
     <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end'>

@@ -26,6 +26,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
           })
         }),
 
+        getUser: builder.query({
+          query: ()=> 'api/v1/users/current-user'
+        }),
+
         upload: builder.mutation({
           query: (formData) => ({
             url: '/api/v1/videos/uploadvideo',
@@ -52,6 +56,25 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
         userVideos: builder.query({
           query: (userId) => `/api/v1/videos/allvideos/${userId}`,
+        }),
+
+        addVideoToHistory: builder.mutation({
+          query: (videoId) => ({
+            url: `/api/v1/users/watch/${videoId}`,
+            method: 'POST',
+          })
+        }),
+
+        watchHistory: builder.query({
+          query: () => '/api/v1/users/history'
+        }),
+
+        updateDetails: builder.mutation({
+          query: (details) => ({
+            url: '/api/v1/users/update-account',
+            method: 'PATCH',
+            body: { ...details}
+          }),
         })
        
       }),
@@ -62,12 +85,15 @@ export const authApiSlice = apiSlice.injectEndpoints({
 export const { 
   useSignupMutation, 
   useLoginMutation, 
-  useLogoutMutation, 
+  useLogoutMutation,
+  useGetUserQuery, 
   useUploadMutation, 
   useAllvideosQuery,
   useGetVideoByIdQuery,
   useUserChannelQuery,
   useUserVideosQuery,
+  useAddVideoToHistoryMutation,
+  useWatchHistoryQuery
 
 } = authApiSlice;
 

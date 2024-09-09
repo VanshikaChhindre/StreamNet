@@ -1,11 +1,10 @@
 
 import Layout from './Layout'
 import { Route, Routes } from 'react-router-dom'
-import { Home, Channel } from './components/exports'
-import Video from './components/VideoUpload'
+import { Home, Channel, Video, VideoPlayer, WatchHistory, Settings } from './components/exports'
 import Login from './features/Login'
 import Signup from './features/Signup'
-import VideoPlayer from './components/VideoPlayer'
+
 
 
 function App() {
@@ -19,6 +18,8 @@ function App() {
     <Route path='/' element={<Layout/>}>
         <Route path='/' element={<Home/>}/>
         <Route path='/your-channel/:userId?' element={<Channel/>}/>
+        <Route path='/watch-history' element={<WatchHistory/>}/>
+        <Route path='/settings' element={<Settings/>}/>
         <Route path='/add-video' element={<Video/>}/>
         <Route path='/video/:id' element={<VideoPlayer/>}/>
       </Route>

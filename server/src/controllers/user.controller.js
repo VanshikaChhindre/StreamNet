@@ -4,6 +4,7 @@ import { User} from "../models/user.model.js"
 import {uploadToCloudinary} from "../utils/cloudinary.js"
 import { ApiResponse } from "../utils/ApiResponse.js";
 import jwt from "jsonwebtoken"
+import { Video } from "../models/video.model.js"
 import mongoose from "mongoose";
 
 
@@ -179,58 +180,9 @@ const logoutUser = asyncHandler(async(req, res) => {
     .json(new ApiResponse(200, {}, "User logged Out"))
 })
 
-const refreshAccessToken = asyncHandler(async (req, res) => {
-    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
-
-    if (!incomingRefreshToken) {
-        throw new ApiError(401, "unauthorized request")
-    }
-
-    try {
-        const decodedToken = jwt.verify(
-            incomingRefreshToken,
-            process.env.REFRESH_TOKEN_SECRET
-        )
-    
-        const user = await User.findById(decodedToken?._id)
-    
-        if (!user) {
-            throw new ApiError(401, "Invalid refresh token")
-        }
-    
-        if (incomingRefreshToken !== user?.refreshToken) {
-            throw new ApiError(401, "Refresh token is expired or used")
-            
-        }
-    
-        const options = {
-            httpOnly: true,
-            secure: true
-        }
-    
-        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
-    
-        return res
-        .status(200)
-        .cookie("accessToken", accessToken, options)
-        .cookie("refreshToken", newRefreshToken, options)
-        .json(
-            new ApiResponse(
-                200, 
-                {accessToken, refreshToken: newRefreshToken},
-                "Access token refreshed"
-            )
-        )
-    } catch (error) {
-        throw new ApiError(401, error?.message || "Invalid refresh token")
-    }
-
-})
 
 const changeCurrentPassword = asyncHandler(async(req, res) => {
     const {oldPassword, newPassword} = req.body
-
-    
 
     const user = await User.findById(req.user?._id)
     const isPasswordCorrect = await user.isPasswordCorrect(oldPassword)
@@ -258,38 +210,31 @@ const getCurrentUser = asyncHandler(async(req, res) => {
     ))
 })
 
-/* const getUserById = asyncHandler(async(req, res) => {
-    const {id} = req.body
-    if(!id){
-        console.log("User not found");
-    }
-
-    const user = await User.aggregate([
-        {
-            $match: {
-                _id: id
-            }
-        }
-    ])
-}) */
 const updateAccountDetails = asyncHandler(async(req, res) => {
-    const {fullName, email} = req.body
+    const {fullName, email, username} = req.body
 
-    if (!fullName || !email) {
-        throw new ApiError(400, "All fields are required")
+    const updateFields = {};
+
+    if (fullName) {
+        updateFields.fullName = fullName;
+    }
+    if (email) {
+        updateFields.email = email;
+    }
+    if (username) {
+        updateFields.username = username;
     }
 
+    if (Object.keys(updateFields).length === 0) {
+        throw new ApiError(400, "No fields provided to update");
+    }
+
+  
     const user = await User.findByIdAndUpdate(
         req.user?._id,
-        {
-            $set: {
-                fullName,
-                email: email
-            }
-        },
-        {new: true}
-        
-    ).select("-password")
+        { $set: updateFields },
+        { new: true }
+    ).select("-password");
 
     return res
     .status(200)
@@ -437,12 +382,41 @@ const getUserChannelProfile = asyncHandler(async(req, res) => {
 })
 
 
+const addVideoToHistory = asyncHandler(async(req, res) =>{
+     const { videoId } = req.params;
+    const userId = req.user._id; // Access the userId directly
+
+    // Find the video and check if it exists
+    const videoExists = await Video.findById(videoId);
+    if (!videoExists) {
+        throw new ApiError(400, "Video does not exist!");
+    }
+
+    // Find the user by their ID
+    const user = await User.findById(userId);
+    if (!user) {
+        throw new ApiError(404, "User not found!");
+    }
+
+    // Add the video to the watch history if it's not already there
+    if (!user.watchHistory.includes(videoId)) {
+        user.watchHistory.push(videoId);
+
+        if (user.watchHistory.length > 10) {
+            user.watchHistory.shift(); // Remove the oldest video
+        }
+        await user.save(); // Save the updated user document to the database
+    }
+
+    res.status(200).json(new ApiResponse(200, null, "Video added to watch history."));
+
+})
 
 const getWatchHistory = asyncHandler(async(req, res) => {
     const user = await User.aggregate([
         {
             $match: {
-                _id: new mongoose.Types.ObjectId(req.user._id)
+                _id: req.user._id
             }
         },
         {
@@ -492,6 +466,54 @@ const getWatchHistory = asyncHandler(async(req, res) => {
     )
 })
 
+const refreshAccessToken = asyncHandler(async (req, res) => {
+    const incomingRefreshToken = req.cookies.refreshToken || req.body.refreshToken
+    console.log("refresh token", req.cookies)
+
+    if (!incomingRefreshToken) {
+        throw new ApiError(401, "unauthorized request")
+    }
+
+    try {
+        const decodedToken = jwt.verify(
+            incomingRefreshToken,
+            process.env.REFRESH_TOKEN_SECRET
+        )
+    
+        const user = await User.findById(decodedToken?._id)
+    
+        if (!user) {
+            throw new ApiError(401, "Invalid refresh token")
+        }
+    
+        if (incomingRefreshToken !== user?.refreshToken) {
+            throw new ApiError(401, "Refresh token is expired or used")
+            
+        }
+    
+        const options = {
+            httpOnly: true,
+            secure: true
+        }
+    
+        const {accessToken, newRefreshToken} = await generateAccessAndRefereshTokens(user._id)
+    
+        return res
+        .status(200)
+        .cookie("accessToken", accessToken, options)
+        .cookie("refreshToken", newRefreshToken, options)
+        .json(
+            new ApiResponse(
+                200, 
+                {accessToken, refreshToken: newRefreshToken},
+                "Access token refreshed"
+            )
+        )
+    } catch (error) {
+        throw new ApiError(401, error?.message || "Invalid refresh token")
+    }
+
+})
 
 export {
     registerUser,
@@ -504,5 +526,6 @@ export {
     updateUserAvatar,
     updateUserCoverImage,
     getUserChannelProfile,
+    addVideoToHistory,
     getWatchHistory
 }

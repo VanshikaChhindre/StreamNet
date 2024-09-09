@@ -5,7 +5,7 @@ import { selectCurrentUser } from '../features/auth/authSlice'
 import { useDispatch } from 'react-redux'
 import { logOut } from '../features/auth/authSlice'
 import { useLogoutMutation } from '../features/auth/authApiSlice'
-import { LightMode, NightMode, HomeIcon, ChannelIcon, HistoryIcon, TweetIcon } from '../assets/navicons'
+import { LightMode, NightMode, HomeIcon, ChannelIcon, HistoryIcon, SettingsIcon } from '../assets/navicons'
 import { useTheme } from '../features/ThemeContext'
 
 const Navbar = () => {
@@ -35,8 +35,8 @@ const Navbar = () => {
       name: 'Your channel',
       Icon: <ChannelIcon />
     },
-    {to:'#', name:'Watched History', Icon : <HistoryIcon/>},
-    {to:'#', name:'Tweet', Icon : <TweetIcon/>},
+    {to:'/watch-history', name:'Watched History', Icon : <HistoryIcon/>},
+    {to:'/settings', name:'Settings', Icon : <SettingsIcon/>},
 
   ]
 
