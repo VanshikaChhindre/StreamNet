@@ -75,6 +75,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
             method: 'PATCH',
             body: { ...details}
           }),
+        }),
+
+        createTweet : builder.mutation({
+          query: (formData) => ({
+            url: `/api/v1/tweets/add-tweet`,
+            method: 'POST',
+            body: formData
+          })
         })
        
       }),
@@ -93,7 +101,9 @@ export const {
   useUserChannelQuery,
   useUserVideosQuery,
   useAddVideoToHistoryMutation,
-  useWatchHistoryQuery
+  useWatchHistoryQuery,
+  useUpdateDetailsMutation,
+  useCreateTweetMutation
 
 } = authApiSlice;
 

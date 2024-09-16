@@ -1,35 +1,70 @@
 import React, { useState, useEffect } from 'react'
 import { EditIcon } from '../assets/navicons'
-import { useSelector } from 'react-redux'
-import { selectCurrentUser } from '../features/auth/authSlice'
-import { useGetUserQuery } from '../features/auth/authApiSlice'
+import { useSelector, useDispatch } from 'react-redux'
+import { selectCurrentUser, updateUserDetails } from '../features/auth/authSlice'
+import { useGetUserQuery, useUpdateDetailsMutation } from '../features/auth/authApiSlice'
 import { ArrowForwardIcon, ArrowDownIcon } from '../assets/navicons'
+
 
 const Settings = () => {
 
   const user = useSelector(selectCurrentUser)
+  const dispatch = useDispatch()
   const [ userData, SetUserData ] = useState({})
-  const [ isOpen, setIsOpen ] = useState(false)
+  const [openIndex, setOpenIndex] = useState(null)
+  const [inputValues, setInputValues] = useState({})
+
+  const [updateDetails, {isLoading, isError, isSuccess}] = useUpdateDetailsMutation()
 
   if(user){
     const { data, isSuccess } = useGetUserQuery( )
 
     useEffect(() => {
         if (isSuccess && data) {
-          console.log(data)
           SetUserData(data.data)
+          setInputValues({
+            email: data.data.email,
+            fullName: data.data.fullName,
+            username: data.data.username,
+          })
         }
+        
       }, [isSuccess, data])
    
   }
 
   const options = [
-    { name: "Update Email", field: userData.email},
-    { name: "Update Fullname", field: userData.fullName },
-    { name: "Update username", field: userData.username},
-    { name: "Update avatar", field: null},
-    { name: "Change Password", field: null}
+    { name: "Update Email", update: "Email", field: userData.email, key: "email" },
+    { name: "Update Fullname", update: "Full Name", field: userData.fullName, key: "fullName" },
+    { name: "Update Username", update: "Username", field: userData.username, key: "username" },
+    
 ]
+
+const handleInputChange = (key, value) => {
+  setInputValues((prevState) => ({
+    ...prevState,
+    [key]: value,
+  }))
+}
+
+// Handle the update submission
+const handleUpdate = async (key) => {
+  try {
+    const updatedValue = inputValues[key]
+      await updateDetails({ [key]: updatedValue }).unwrap() // Send updated data to server
+
+      // If update is successful, update Redux store
+      dispatch(updateUserDetails({ key, value: updatedValue }))
+
+      alert(`${options.find(item => item.key === key).update} updated successfully!`)
+      window.location.reload()
+  } catch (err) {
+    console.error('Update failed', err)
+  }
+}
+
+/* { name: "Update avatar", field: null},
+    { name: "Change Password", field: null} */
  
   return (
     <>
@@ -41,22 +76,33 @@ const Settings = () => {
             {options.map((item, index) =>(
                 <div className='w-full h-auto flex flex-col items-center gap-3'>
                     <button key={index} 
-                    className= {`w-3/4 h-16 bg-secondary rounded-full flex items-center ${item.field !== null? "justify-between" : "justify-center"} px-20`} 
-                    onClick={()=> setIsOpen(!isOpen)}
+                    className= {`w-3/4 h-16 bg-secondary rounded-full flex items-center  justify-between px-20`} 
+                    onClick={() => setOpenIndex(openIndex === index ? null : index)}
                     >
                         <div className='flex items-center justify-center gap-2'><EditIcon/> <div>{item.name}</div></div>
                         <span className='flex items-center gap-4'>
                             {item.field}
                             <icon>
-                            {item.field !== null ? <ArrowForwardIcon /> : null}
+                            {openIndex === index ? <ArrowDownIcon /> : <ArrowForwardIcon />}
                             </icon>
                         </span>
                     </button>
-                    {isOpen && item.field !== null && (
-                    <div className='w-3/4 h-20 bg-white'></div>
+                    {openIndex === index && item.field !== null && (
+                    <div className='w-3/4 h-20 flex items-center justify-center gap-5'>
+                      <input className='w-1/2 h-10 outline-none p-3 rounded-md text-black' 
+                      placeholder={`Enter new ${item.update}`}
+                      value={inputValues[item.key] || ''}
+                      onChange={(e) => handleInputChange(item.key, e.target.value)}
+                      />
+                      <button className='w-32 h-10 hover:bg-primary bg-accent rounded-md '
+                      onClick={() => handleUpdate(item.key)}
+                      disabled={isLoading}>Update</button>
+                    </div>
                     )}
                     </div>
                 ))}
+
+                <div></div>
 
             </section>
         </div>

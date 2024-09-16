@@ -1,7 +1,7 @@
 
 import Layout from './Layout'
 import { Route, Routes } from 'react-router-dom'
-import { Home, Channel, Video, VideoPlayer, WatchHistory, Settings } from './components/exports'
+import { Home, Channel, Video, VideoPlayer, WatchHistory, Settings, Tweet } from './components/exports'
 import Login from './features/Login'
 import Signup from './features/Signup'
 
@@ -21,6 +21,7 @@ function App() {
         <Route path='/watch-history' element={<WatchHistory/>}/>
         <Route path='/settings' element={<Settings/>}/>
         <Route path='/add-video' element={<Video/>}/>
+        <Route path='/add-tweet' element={<Tweet/>}/>
         <Route path='/video/:id' element={<VideoPlayer/>}/>
       </Route>
     </Routes>

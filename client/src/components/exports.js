@@ -5,6 +5,7 @@ import {default as Video} from './VideoUpload'
 import {default as VideoPlayer} from './VideoPlayer'
 import {default as WatchHistory} from './WatchHistory'
 import {default as Settings} from './Settings'
+import {default as Tweet} from './Tweet'
 
 export{
     Nav,
@@ -13,5 +14,6 @@ export{
     Video,
     VideoPlayer,
     WatchHistory,
-    Settings
+    Settings,
+    Tweet
 }

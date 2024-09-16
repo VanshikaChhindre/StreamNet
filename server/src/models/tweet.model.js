@@ -5,6 +5,12 @@ const tweetSchema = new Schema({
         type: String,
         required: true
     },
+    post: [
+        {
+            url: { type: String },  // URL of the image
+            public_id: { type: String }  // Public ID (from a service like Cloudinary)
+        }
+    ],
     owner: {
         type: Schema.Types.ObjectId,
         ref: "User"

@@ -5,9 +5,11 @@ import { selectCurrentUser } from '../features/auth/authSlice';
 import { AddIcon } from '../assets/navicons';
 import { useUserChannelQuery, useUserVideosQuery } from '../features/auth/authApiSlice';
 import VideoCard from './VideoCard';
+import coverImageDefault from '../assets/coverImageDefault.avif' 
 
 const Channel = () => {
   const user = useSelector(selectCurrentUser)
+  console.log(user)
   const [userData, setUserData] = useState({})
   const [videos, setVideos] = useState([])
  
@@ -55,7 +57,7 @@ const Channel = () => {
        <main className='w-[79vw] min-h-[100vh] bg-background text-text flex flex-col'>
         <section className='w-full h-[25rem] bg-background text-text mt-[4rem] flex flex-col'>
           <span className='w-full h-[50%] bg-cover bg-center flex items-center justify-center' 
-          style={{backgroundImage: `url('https://images.unsplash.com/photo-1722182877533-7378b60bf1e8?q=80&w=1614&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D')`}}
+          style={{backgroundImage: `url(${user?.coverImage ? user.coverImage : coverImageDefault})`}}
           ></span>
           <span className='w-full h-[50%]  flex'>
             <div className='w-1/4 h-full  flex items-center justify-center'>
@@ -102,8 +104,11 @@ const Channel = () => {
           </Link>
         </section>
         ):(
-          <section className='w-full h-20  flex items-center justify-center z-40'>
-           <Link to='/add-tweet' className='w-28 h-10 bg-slate-700 flex items-center justify-center'>Add Tweet</Link>
+          <section className='w-full h-14 flex items-center justify-center pt-5 px-3 z-40'>
+           <Link to='/add-tweet' className='w-32 h-10 text-text bg-secondary flex items-center justify-center gap-2 rounded-full'>
+          <AddIcon className='w-6 h-6'/>
+          <h5> Add Tweet</h5>
+          </Link>
         </section>
         )}
 
@@ -126,7 +131,7 @@ const Channel = () => {
          </div>
                 
             ) : (
-              <div className='w-full h-full flex flex-col gap-5'>
+              <div className='w-full h-full flex flex-col gap-5 p-5'>
               {tweets.map((item, index)=>(
                 <card key={index} className='w-full h-[5rem] bg-slate-700 '>
                    {item.tweet}

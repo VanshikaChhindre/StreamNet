@@ -64,7 +64,7 @@ const Video = () => {
 
   return (
     <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end'>
-        <main className='w-[80vw] min-h-[100vh] bg-slate-900 flex flex-col px-36 py-10'>
+        <main className='w-[80vw] min-h-[100vh] bg-background text-text flex flex-col px-36 py-10'>
 
           <form onSubmit={
             handleSubmit(uploadVideo)}
@@ -117,13 +117,13 @@ const Video = () => {
            <textarea
             rows="4"
             className={` w-full border border-gray-300 rounded-md p-2 outline-none `}
-            placeholder="Enter your message here"
+            placeholder="Enter description here"
             name = "description"
             {...register("description", { required: true })}>
             </textarea> 
             {errors.description && <p className="text-red-400">{errors.description.message}</p>}
 
-           <button type="submit" className="bg-blue-500 text-white p-2">
+           <button type="submit" className="w-full h-10 mt-5 bg-accent hover:bg-primary text-text p-2">
             Submit
           </button>
 

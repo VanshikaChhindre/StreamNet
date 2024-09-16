@@ -34,7 +34,7 @@ const Login = () => {
 
       try {
         const response = await login(userData).unwrap();
-        console.log(response)  
+        console.log(response.data)  
 
         /* const response = await axios.post(`http://localhost:4000/api/v1/users/login`,  userData); 
         console.log(response.data); */

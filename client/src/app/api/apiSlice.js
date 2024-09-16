@@ -16,37 +16,39 @@ const baseQuery = fetchBaseQuery({
 })
 
 
+
 const baseQueryWithReauth = async(args, api, extraOptions) => {
     let result = await baseQuery(args, api, extraOptions)
 
     if (result?.error?.originalStatus === 401){
         console.log("sending refresh token")
 
-        const refreshResult = await baseQuery({
-            url: '/api/v1/users/refresh-token',
-            method: 'POST' 
-        }, api, extraOptions)
-        if (refreshResult?.error?.originalStatus === 404) {
-            console.log("Refresh token endpoint not found. Check your API route.");
-        } else if (refreshResult?.error?.status === 'PARSING_ERROR') {
-            console.log("Response is not JSON. Ensure the server returns JSON.");
-            console.log(refreshResult.error); // Log the full error
+        const refreshResult = await baseQuery(
+            {
+                url: '/api/v1/users/refresh-token', // Refresh token endpoint
+                method: 'POST',
+                body: {
+                  refreshToken: api.getState().auth.user.refreshToken, // Refresh token stored in Redux
+                },
+              },
+              api,
+              extraOptions
+            );
+           /*  '/api/v1/users/refresh-token', api, extraOptions)  */
+        console.log("refreshResult", refreshResult)
+        if(refreshResult?.data){
+            const user = api.getState().auth.user
+            //store new token
+            api.dispatch(setCredentials({...refreshResult.data, user}))
+            //retry the original query with new access token
+            result = await baseQuery(args, api, extraOptions)
         } else {
-            console.log(refreshResult); // Log the successful response
-
-            if (refreshResult?.data) {
-                const user = api.getState().auth.user;
-                // Store the new access token and refresh token
-                api.dispatch(setCredentials({ ...refreshResult.data, user }));
-                // Retry the original query with the new access token
-                result = await baseQuery(args, api, extraOptions);
-            } else {
-                api.dispatch(logOut()); // If refresh token fails, log the user out
-            }
+            api.dispatch(logOut())
         }
     }
     return result
 }
+
 
 export const apiSlice = createApi({
     baseQuery: baseQueryWithReauth,

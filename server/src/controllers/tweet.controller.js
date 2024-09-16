@@ -1,16 +1,25 @@
 import mongoose, { isValidObjectId } from "mongoose"
 import {Tweet} from "../models/tweet.model.js"
 import {User} from "../models/user.model.js"
-import {ApiError} from "../utils/ApiError.js"
+import {ApiError} from "../utils/ApiErrors.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
+import {uploadToCloudinary} from "../utils/cloudinary.js"
 
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
     const {content} = req.body
+    const postLocalPath = req.files.post[0].path
+
     if(!content){
        throw new ApiError(400, "Tweet is required.")
+    }  
+
+    const post = {};
+    if(postLocalPath){
+        post = await uploadToCloudinary(postLocalPath)
     }
+
 
     const user = req.user._id
     if(!user){
@@ -20,6 +29,7 @@ const createTweet = asyncHandler(async (req, res) => {
     const tweet = await Tweet.create(
         {
             content,
+            post : {url:post?.url, public_id:post?.public_id},
             owner: user
         
         }
