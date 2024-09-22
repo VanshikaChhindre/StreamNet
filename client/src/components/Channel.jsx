@@ -3,25 +3,34 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../features/auth/authSlice';
 import { AddIcon } from '../assets/navicons';
-import { useUserChannelQuery, useUserVideosQuery } from '../features/auth/authApiSlice';
+import { useUserChannelQuery, useUserVideosQuery, useUserTweetsQuery } from '../features/auth/authApiSlice';
 import VideoCard from './VideoCard';
 import coverImageDefault from '../assets/coverImageDefault.avif' 
+import { formatDate } from 'date-fns';
 
 const Channel = () => {
   const user = useSelector(selectCurrentUser)
   console.log(user)
   const [userData, setUserData] = useState({})
   const [videos, setVideos] = useState([])
+  const [tweets, setTweets] = useState([])
+
+  const formatDate = (isoString) => {
+    const date = new Date(isoString);
+    return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+  }
  
   if(user){
   
   const { data : userApi, isSuccess : isUserApiSuccess } = useUserChannelQuery(user.username)
   const { data : videoApi, isSuccess : isVideoApiSuccess } = useUserVideosQuery(user._id)
+  const { data : tweetApi, isSuccess : isTweetApiSuccess } = useUserTweetsQuery(user._id)
 
+  
   useEffect(() => {
     if (isUserApiSuccess && userApi ) {
       setUserData(userApi.data);
-      console.log(userApi.data); // Log the correct value
+      console.log("userapi", userApi.data); // Log the correct value
     }
   }, [userApi, isUserApiSuccess]);
 
@@ -30,22 +39,14 @@ const Channel = () => {
       setVideos(videoApi.data);
       console.log(videoApi.data); // Log the correct value
     }
-  }, [videoApi, isVideoApiSuccess]);
+
+    if(isTweetApiSuccess && tweetApi){
+      setTweets(tweetApi.data)
+      console.log(tweetApi.data)
+    }
+  }, [videoApi, isVideoApiSuccess, tweetApi, isTweetApiSuccess]);
   }
-  
 
-  
-  const tweets = [
-    {tweet: 'tweet1'},
-    {tweet: 'tweet2'},
-    {tweet: 'tweet3'},
-    {tweet: 'tweet4'},
-    {tweet: 'tweet5'},
-  
-
-  ]
-
-  
 
     const [option, setOption] = useState("videos");
 
@@ -133,8 +134,24 @@ const Channel = () => {
             ) : (
               <div className='w-full h-full flex flex-col gap-5 p-5'>
               {tweets.map((item, index)=>(
-                <card key={index} className='w-full h-[5rem] bg-slate-700 '>
-                   {item.tweet}
+                <card key={index} className='w-full min-h-[5rem] flex items-start bg-secondary/25 text-text'>
+                  <pfp className='w-20 h-20 flex items-start justify-center'>
+                    <span className='w-12 h-12 rounded-full bg-cover bg-center bg-green'
+                          style={{ backgroundImage: `url('${userData?.avatar?.url}')` }}/>
+                  </pfp>
+                  <div className='w-[62rem] h-full flex flex-col'>
+                  <info className='w-60 h-6 flex gap-3 text-primary'>
+                    <span>{userData?.fullName}</span>
+                    <span>@{userData?.username}</span>
+                  </info>
+                  <tweet className='w-full min-h-8 flex flex-col gap-1'>
+                    <p className='w-full min-h-8 flex items-center'>{item.content}</p>
+                    {item.photo? <span className='w-2/4 h-96 bg-white bg-cover bg-center' 
+                    style={{backgroundImage : `url(${item.photo[0].url})`}}></span> : ''}
+                    
+                    <p className='text-xs text-gray-500'>{formatDate(item.createdAt)}</p>
+                  </tweet>
+                  </div>
                 </card>
               
                 ))}

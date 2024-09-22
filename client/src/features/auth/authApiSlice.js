@@ -1,3 +1,4 @@
+import { BsBuildingFill } from "react-icons/bs";
 import { apiSlice } from "../../app/api/apiSlice";
 
 export const authApiSlice = apiSlice.injectEndpoints({
@@ -83,6 +84,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
             method: 'POST',
             body: formData
           })
+        }),
+
+        userTweets : builder.query({
+          query: (userId) => `/api/v1/tweets/tweet/${userId}`,
         })
        
       }),
@@ -103,7 +108,8 @@ export const {
   useAddVideoToHistoryMutation,
   useWatchHistoryQuery,
   useUpdateDetailsMutation,
-  useCreateTweetMutation
+  useCreateTweetMutation,
+  useUserTweetsQuery
 
 } = authApiSlice;
 

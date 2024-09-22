@@ -5,7 +5,7 @@ const tweetSchema = new Schema({
         type: String,
         required: true
     },
-    post: [
+    photo: [
         {
             url: { type: String },  // URL of the image
             public_id: { type: String }  // Public ID (from a service like Cloudinary)

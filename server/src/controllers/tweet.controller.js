@@ -9,38 +9,43 @@ import {uploadToCloudinary} from "../utils/cloudinary.js"
 const createTweet = asyncHandler(async (req, res) => {
     //TODO: create tweet
     const {content} = req.body
-    const postLocalPath = req.files.post[0].path
+    const photoLocalPath = req.files?.photo ? req.files.photo[0]?.path : null;
 
     if(!content){
        throw new ApiError(400, "Tweet is required.")
     }  
 
-    const post = {};
-    if(postLocalPath){
-        post = await uploadToCloudinary(postLocalPath)
+    if(!photoLocalPath){
+        console.log("no Photo found")
     }
 
-
-    const user = req.user._id
-    if(!user){
-        throw new ApiError(404, "user not found")
-    }
-
-    const tweet = await Tweet.create(
-        {
-            content,
-            post : {url:post?.url, public_id:post?.public_id},
-            owner: user
-        
+    let photo = {};
+    if (photoLocalPath) {
+        // If there is a photo, upload it to Cloudinary
+        const uploadedPhoto = await uploadToCloudinary(photoLocalPath);
+        if (uploadedPhoto) {
+            photo = {
+                url: uploadedPhoto.url,
+                public_id: uploadedPhoto.public_id,
+            };
         }
-    )
+    }
+
+    const user = req.user._id;
+    if (!user) {
+        throw new ApiError(404, "User not found");
+    }
+
+    const tweet = await Tweet.create({
+        content,
+        photo, // Assigning the photo object (it will be empty if no photo was uploaded)
+        owner: user,
+    });
 
     res.status(200).json( new ApiResponse(200, tweet, "Tweet created successfully!"))
 })
 
-const getAllTweets = asyncHandler(async(req, res)=>{
-     
-})
+
 
 const getUserTweets = asyncHandler(async (req, res) => {
     // TODO: get user tweets
@@ -59,6 +64,12 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
     res.status(200).json(new ApiResponse(200, tweets, "Tweets fetched"))
 })
+
+
+const getAllTweets = asyncHandler(async(req, res)=>{
+     
+})
+
 
 const updateTweet = asyncHandler(async (req, res) => {
     //TODO: update tweet
