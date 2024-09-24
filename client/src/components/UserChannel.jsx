@@ -1,5 +1,5 @@
 import React, {useState, useEffect} from 'react'
-import { Link } from 'react-router-dom';
+import { Link, useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../features/auth/authSlice';
 import { AddIcon } from '../assets/navicons';
@@ -10,7 +10,7 @@ import { formatDate } from 'date-fns';
 
 const Channel = () => {
   const user = useSelector(selectCurrentUser)
-  console.log(user)
+  const channel = useParams()
   const [userData, setUserData] = useState({})
   const [videos, setVideos] = useState([])
   const [tweets, setTweets] = useState([])
@@ -22,7 +22,7 @@ const Channel = () => {
  
   if(user){
   
-  const { data : userApi, isSuccess : isUserApiSuccess } = useUserChannelQuery(user._id)
+  const { data : userApi, isSuccess : isUserApiSuccess } = useUserChannelQuery(user.username)
   const { data : videoApi, isSuccess : isVideoApiSuccess } = useUserVideosQuery(user._id)
   const { data : tweetApi, isSuccess : isTweetApiSuccess } = useUserTweetsQuery(user._id)
 

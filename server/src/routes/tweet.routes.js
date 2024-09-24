@@ -3,7 +3,8 @@ import {
     createTweet, 
     updateTweet,
     deleteTweet, 
-    getUserTweets 
+    getUserTweets,
+    getAllTweets
 } from "../controllers/tweet.controller.js"
 import { verifyJWT } from "../middleware/auth.middleware.js";
 import {upload} from "../middleware/multer.middleware.js"
@@ -17,6 +18,7 @@ router.route("/add-tweet").post(verifyJWT, upload.fields([
     }
 ]), createTweet)
 
+router.route("/all-tweets").get(getAllTweets);
 router.route("/update-tweet").post(verifyJWT, updateTweet);
 router.route("/delete-tweet").delete(verifyJWT, deleteTweet);
 router.route("/tweet/:userId").get(verifyJWT, getUserTweets);

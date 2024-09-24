@@ -7,7 +7,7 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 import {uploadToCloudinary} from "../utils/cloudinary.js"
 
 const createTweet = asyncHandler(async (req, res) => {
-    //TODO: create tweet
+    //Tested OK
     const {content} = req.body
     const photoLocalPath = req.files?.photo ? req.files.photo[0]?.path : null;
 
@@ -48,7 +48,7 @@ const createTweet = asyncHandler(async (req, res) => {
 
 
 const getUserTweets = asyncHandler(async (req, res) => {
-    // TODO: get user tweets
+    // Tested OK
 
     const userID = req.params.userID ? req.params.userID : req.user._id
 
@@ -67,7 +67,19 @@ const getUserTweets = asyncHandler(async (req, res) => {
 
 
 const getAllTweets = asyncHandler(async(req, res)=>{
-     
+
+     // Fetch all tweets and populate the owner details
+    const tweets = await Tweet.find()
+    .populate('owner', 'fullName username avatar') // Replace with actual fields you want
+    .sort({ createdAt: -1 }); // Sort by creation date, most recent first
+
+    // Check if tweets were found
+    if (!tweets) {
+        throw new ApiError(404, "No tweets Found.")
+    }
+
+    return res.status(200).json(new ApiResponse(200, tweets, "All Tweets fetched"));
+
 })
 
 
@@ -112,6 +124,7 @@ const deleteTweet = asyncHandler(async (req, res) => {
 export {
     createTweet,
     getUserTweets,
+    getAllTweets,
     updateTweet,
     deleteTweet
 }

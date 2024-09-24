@@ -52,7 +52,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }),
 
         userChannel: builder.query({
-          query: (username) => `/api/v1/users/c/${username}`,
+          query: (userId) => `/api/v1/users/c/${userId}`,
         }),
 
         userVideos: builder.query({
@@ -88,6 +88,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
         userTweets : builder.query({
           query: (userId) => `/api/v1/tweets/tweet/${userId}`,
+        }),
+
+        allTweets : builder.query({
+          query: () => `/api/v1/tweets/all-tweets`,
         })
        
       }),
@@ -109,7 +113,8 @@ export const {
   useWatchHistoryQuery,
   useUpdateDetailsMutation,
   useCreateTweetMutation,
-  useUserTweetsQuery
+  useUserTweetsQuery,
+  useAllTweetsQuery
 
 } = authApiSlice;
 

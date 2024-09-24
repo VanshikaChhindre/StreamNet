@@ -1,7 +1,7 @@
 
 import Layout from './Layout'
 import { Route, Routes } from 'react-router-dom'
-import { Home, Channel, Video, VideoPlayer, WatchHistory, Settings, Tweet } from './components/exports'
+import { Home, Channel, Video, VideoPlayer, WatchHistory, Settings, Tweet, UserChannel} from './components/exports'
 import Login from './features/Login'
 import Signup from './features/Signup'
 
@@ -18,6 +18,7 @@ function App() {
     <Route path='/' element={<Layout/>}>
         <Route path='/' element={<Home/>}/>
         <Route path='/your-channel/:userId?' element={<Channel/>}/>
+        <Route path='/user-channel/:username' element={<UserChannel/>}/>
         <Route path='/watch-history' element={<WatchHistory/>}/>
         <Route path='/settings' element={<Settings/>}/>
         <Route path='/add-video' element={<Video/>}/>

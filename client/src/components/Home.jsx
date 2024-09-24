@@ -2,7 +2,7 @@ import React, {useEffect, useState} from 'react'
 import { useSelector } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { selectCurrentUser } from '../features/auth/authSlice';
-import { useAllvideosQuery } from '../features/auth/authApiSlice';
+import { useAllvideosQuery, useAllTweetsQuery } from '../features/auth/authApiSlice';
 import VideoCard from './VideoCard';
 
 
@@ -10,31 +10,44 @@ import VideoCard from './VideoCard';
 const Home = () => {
 
     const user = useSelector(selectCurrentUser)
-    const { data, isLoading, isError, isSuccess, refetch } = useAllvideosQuery();
+    const { data: videoData, isLoading: isLoadingVideos, isError: isErrorVideos, isSuccess: isVideoSuccess, refetch: refetchVideos } = useAllvideosQuery();
+    const { data: tweetData, isLoading: isLoadingTweets, isError: isErrorTweets, isSuccess: isTweetSuccess, refetch: refetchTweets } = useAllTweetsQuery();
 
     const [option, setOption] = useState("videos"); 
-    const [videos, setVideos] = useState([])
+    const [videos, setVideos] = useState([]);
+    const [tweets, setTweets] = useState([]);
 
-    const tweets = [
-        {tweet: 'tweet1'},
-        {tweet: 'tweet2'},
-        {tweet: 'tweet3'},
-        {tweet: 'tweet4'},
-        {tweet: 'tweet5'},
-      ]
+    const formatDate = (isoString) => {
+      const date = new Date(isoString);
+      return `${date.toLocaleDateString()} at ${date.toLocaleTimeString()}`;
+    }
 
-      useEffect(() => {
-        if (isSuccess) {
-          const videos = data?.data?.docs || [];
-          setVideos(videos);
+    // Fetch videos
+    useEffect(() => {
+        if (isVideoSuccess) {
+            const videos = videoData?.data?.docs || [];
+            console.log(videos)
+            setVideos(videos);
         }
-      }, [isSuccess, data])
+    }, [isVideoSuccess, videoData]);
 
-      useEffect(() => {
+    // Fetch tweets
+    useEffect(() => {
+        if (isTweetSuccess) {
+            const tweets = tweetData?.data || [];
+            console.log(tweets)
+            setTweets(tweets);
+        }
+    }, [isTweetSuccess, tweetData]);
+
+    // Refetch data based on option
+    useEffect(() => {
         if (option === "videos") {
-            refetch(); // Refetch videos when the option changes to "videos"
+            refetchVideos(); // Refetch videos when the option changes to "videos"
+        } else if (option === "tweets") {
+            refetchTweets(); // Refetch tweets when the option changes to "tweets"
         }
-    }, [option, refetch]);
+    }, [option, refetchVideos, refetchTweets]);
 
   return (
     <div className='w-full min-h-screen bg-background flex flex-col items-end justify-end'>
@@ -76,13 +89,29 @@ const Home = () => {
             
             </section>
           ) : (
-            <div className='w-full h-full flex flex-col gap-5 bg-slate-950 p-5'>
+            <div className='w-full h-full flex flex-col gap-5 p-5'>
             {tweets.map((item, index)=>(
-              <card key={index} className='w-full h-[5rem] bg-slate-700 '>
-                 {item.tweet}
-              </card>
-            
-              ))}
+                <card key={index} className='w-full min-h-[5rem] flex items-start bg-secondary/25 text-text'>
+                  <pfp className='w-20 h-20 flex items-start justify-center'>
+                    <span className='w-12 h-12 rounded-full bg-cover bg-center bg-green'
+                          style={{ backgroundImage: `url('${item.owner?.avatar?.url}')` }}/>
+                  </pfp>
+                  <div className='w-[62rem] h-full flex flex-col'>
+                  <info className='w-60 h-6 flex gap-3 text-primary'>
+                    <span>{item.owner.fullName}</span>
+                    <span>@{item.owner.username}</span>
+                  </info>
+                  <tweet className='w-full min-h-8 flex flex-col gap-1'>
+                    <p className='w-full min-h-8 flex items-center'>{item.content}</p>
+                    {item.photo[0].url? <span className='w-2/4 h-96 bg-white bg-cover bg-center' 
+                    style={{backgroundImage : `url(${item.photo[0].url})`}}></span> : null}
+                    
+                    <p className='text-xs text-gray-500'>{formatDate(item.createdAt)}</p>
+                  </tweet>
+                  </div>
+                </card>
+              
+                ))} 
               </div>
           )}
         
