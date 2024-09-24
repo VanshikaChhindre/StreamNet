@@ -1,5 +1,6 @@
 import React from 'react'
 import { formatDistanceToNow } from 'date-fns';
+import { Link } from 'react-router-dom';
 
 const VideoCard = ({
     thumbnail,
@@ -38,7 +39,7 @@ const VideoCard = ({
                             {title}
                         </span>
                         <span className='text-sm flex items-center gap-2'>
-                            <div>{username} ● </div>
+                            <Link to={`user-channel/${username}`}>{username} ● </Link>
                             <div>{formatDistanceToNow(new Date(createdAt), { addSuffix: true })}</div>
                         </span>
                     </div>  

@@ -22,7 +22,7 @@ const Channel = () => {
  
   if(user){
   
-  const { data : userApi, isSuccess : isUserApiSuccess } = useUserChannelQuery(user._id)
+  const { data : userApi, isSuccess : isUserApiSuccess } = useUserChannelQuery(user.username)
   const { data : videoApi, isSuccess : isVideoApiSuccess } = useUserVideosQuery(user._id)
   const { data : tweetApi, isSuccess : isTweetApiSuccess } = useUserTweetsQuery(user._id)
 

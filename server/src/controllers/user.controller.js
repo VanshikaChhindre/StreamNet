@@ -214,6 +214,23 @@ const getCurrentUser = asyncHandler(async(req, res) => {
     ))
 })
 
+const getUserById = asyncHandler((req, res)=>{
+    const { userId } = req.params || req.body
+    if(!userId){
+        throw new ApiError(400, "UserID is required!")
+    }
+
+    const user = User.findById(userId);
+
+    if(!user){
+        throw new ApiError(404, "User doesn't exist")
+    }
+
+    return res.status(200).json( new ApiResponse(
+        200, user, "User fetched successfully!"
+    ))
+})
+
 const updateAccountDetails = asyncHandler(async(req, res) => {
     const {fullName, email, username} = req.body
 
@@ -314,16 +331,17 @@ const updateUserCoverImage = asyncHandler(async(req, res) => {
 
 
 const getUserChannelProfile = asyncHandler(async(req, res) => {
-    const {userId} = req.params
+    const {username} = req.params
+    console.log(req.params)
 
-    if (!userId) {
-        throw new ApiError(400, "userId is missing")
+    if (!username?.trim()) {
+        throw new ApiError(400, "username is missing")
     }
 
     const channel = await User.aggregate([
         {
             $match: {
-                _id : userId
+                username: username?.toLowerCase()
             }
         },
         {
@@ -532,5 +550,6 @@ export {
     updateUserCoverImage,
     getUserChannelProfile,
     addVideoToHistory,
-    getWatchHistory
+    getWatchHistory,
+    getUserById
 }
