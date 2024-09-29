@@ -56,9 +56,9 @@ const Login = () => {
 
  
   return (
-    <div className='w-full h-screen bg-slate-950 flex items-center justify-center'>
+    <div className='w-full h-screen bg-background text-text flex items-center justify-center'>
         
-        <main className='w-1/3 h-1/2 rounded-xl bg-slate-400 p-5 px-12'>
+        <main className='md:w-1/3 h-1/2 rounded-xl bg-secondary p-5 px-12'>
             <form onSubmit={handleSubmit(loginUser)} >
               <container className='w-full h-full flex flex-col items-center'>
                   <Input
@@ -81,11 +81,11 @@ const Login = () => {
                   />
                   {errors.password && <p>{errors.password.message}</p>}
 
-                  <button className='w-32 h-9 text-white bg-green-500 rounded-full hover:bg-green-700'  disabled={!isValid}>Login</button>
+                  <button className='w-32 h-9 text-white bg-green-500 rounded-full hover:bg-green-600 cursor-pointer'  disabled={!isValid}>Login</button>
 
                   <div className='w-full flex gap-1 items-center justify-center mt-5'>
                     <h4>Don't have an account?</h4>
-                    <Link to='#'>Sign up</Link>
+                    <Link className='hover:text-accent' to='/sign-up'>Sign up</Link>
                   </div>
               </container>
 

@@ -3,8 +3,8 @@ import { EditIcon } from '../assets/navicons'
 import { useSelector, useDispatch } from 'react-redux'
 import { selectCurrentUser, updateUserDetails } from '../features/auth/authSlice'
 import { useGetUserQuery, useUpdateDetailsMutation } from '../features/auth/authApiSlice'
-import { ArrowForwardIcon, ArrowDownIcon } from '../assets/navicons'
-
+import { LightMode, NightMode, ArrowForwardIcon, ArrowDownIcon } from '../assets/navicons'
+import { useTheme } from '../features/ThemeContext'
 
 const Settings = () => {
 
@@ -13,6 +13,8 @@ const Settings = () => {
   const [ userData, SetUserData ] = useState({})
   const [openIndex, setOpenIndex] = useState(null)
   const [inputValues, setInputValues] = useState({})
+
+  const { theme, toggleTheme } = useTheme();
 
   const [updateDetails, {isLoading, isError, isSuccess}] = useUpdateDetailsMutation()
 
@@ -107,7 +109,13 @@ const handleUpdate = async (key) => {
             </section>
         </div>
     </div>
-    ) : ""}
+    ) : (<div className='w-full bg-background text-text min-h-screen md:text-5xl text-4xl flex flex-col gap-5 items-center md:items-end justify-center'>
+            <button onClick={toggleTheme} className="md:w-[80vw] md:h-20 flex items-center justify-center z-40">
+              {theme === 'dark'? <LightMode className="w-10 h-10 text-white"/> : <NightMode className="w-7 h-7"/> }
+            </button>
+    <h1 className='w-full h-20 flex items-center justify-center md:justify-end md:pr-72'>Login to use all features</h1>
+
+  </div>)}
     </>
     
     )

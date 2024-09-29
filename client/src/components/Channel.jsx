@@ -54,8 +54,8 @@ const Channel = () => {
   return (
    <>
    {user?
-   ( <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end'>
-       <main className='w-[79vw] min-h-[100vh] bg-background text-text flex flex-col'>
+   ( <div className='w-full min-h-screen bg-pink-400 flex md:items-end md:justify-end'>
+       <main className='w-full md:w-[79vw] min-h-[100vh] bg-background text-text flex flex-col'>
         <section className='w-full h-[25rem] bg-background text-text mt-[4rem] flex flex-col'>
           <span className='w-full h-[50%] bg-cover bg-center flex items-center justify-center' 
           style={{backgroundImage: `url(${user?.coverImage ? user.coverImage : coverImageDefault})`}}
@@ -122,7 +122,7 @@ const Channel = () => {
                 thumbnail = {item.thumbnail.url}
                 duration = {item.duration}
                 title = {item.title}
-                
+                username = {item.owner.username}
                 avatar = {item.owner.avatar?.url}
                 createdAt = {item.createdAt}
               />
@@ -165,8 +165,8 @@ const Channel = () => {
         
     
        </main>
-    </div>) : (<div className='w-full min-h-screen text-6xl flex items-center justify-center'>
-      <h1 className=''>Login to use Channel</h1>
+    </div>) : (<div className='w-full bg-background text-text min-h-screen md:text-5xl text-4xl flex items-center justify-center md:justify-end '>
+      <h1 className=' flex items-center justify-center md:mr-80'>Login to use Channel</h1>
     </div>)}
   </>
     

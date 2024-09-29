@@ -23,6 +23,8 @@ const WatchHistory = () => {
   }
 
   return (
+    <>
+    {user? (
     <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end'>
        <main className='w-[80vw] min-h-[100vh] bg-background text-text flex flex-col'>
         <div className='w-full min-h-[25rem] bg-background text-text mt-[4rem] flex flex-col'>
@@ -46,6 +48,10 @@ const WatchHistory = () => {
         </div>
        </main>
     </div>
+    ): ( <div className='w-full bg-background text-text min-h-screen md:text-5xl text-4xl flex items-center justify-center md:justify-end '>
+      <h1 className=' flex items-center justify-center md:mr-80'>Login to view Watch History</h1>
+    </div>)}
+    </>
   )
 }
 

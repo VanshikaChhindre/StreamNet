@@ -74,11 +74,11 @@ const Signup = () => {
     
 
   return (
-    <div className='w-full h-screen bg-slate-950 flex items-center justify-center'>
+    <div className='w-full h-screen bg-background text-text flex items-center justify-center'>
         
-        <main className='w-1/2 h-3/5 rounded-xl bg-slate-400 p-5 px-12 flex items-center justify-center'>
+        <main className='md:w-1/2 h-3/5 rounded-xl bg-secondary p-5 md:px-12 px-8 flex items-center justify-center'>
             <form onSubmit={handleSubmit(registerUser)} >
-              <container className='w-full h-full flex flex-col items-center'>
+              <container className='w-full h-full flex flex-col items-center '>
                    <div className='w-full flex gap-4'>
                     <Input
                     label = "Full Name"
@@ -148,11 +148,11 @@ const Signup = () => {
                    {errors.password && <p className="text-red-400">{errors.password.message}</p>}
                   </div>
 
-                  <button className='w-32 h-9 text-white bg-green-500 rounded-full mt-6' disabled={!isValid}>Login</button>
+                  <button className='w-32 h-9 text-white bg-green-500 hover:bg-green-600 rounded-full mt-6 cursor-pointer' disabled={!isValid}>Login</button>
 
                   <div className='w-full flex gap-1 items-center justify-center mt-5'>
-                    <h4>Don't have an account?</h4>
-                    <Link to='#'>Sign up</Link>
+                    <h4>Already have an account?</h4>
+                    <Link className='hover:text-accent' to='/login'>Login</Link>
                   </div>
               </container>
 

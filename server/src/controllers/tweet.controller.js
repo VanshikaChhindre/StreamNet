@@ -50,13 +50,14 @@ const createTweet = asyncHandler(async (req, res) => {
 const getUserTweets = asyncHandler(async (req, res) => {
     // Tested OK
 
-    const userID = req.params.userID ? req.params.userID : req.user._id
+    const userId = req.params.userId
+    console.log(userId)
 
-    if(!userID){
+    if(!userId){
        throw new ApiError(400, "User not found")
     }
 
-    const tweets = await Tweet.find({ owner: userID}).sort({createdAt: -1})
+    const tweets = await Tweet.find({ owner: userId}).sort({createdAt: -1})
 
     if(!tweets.length){
         throw new ApiError(404, "No tweets found for this user")

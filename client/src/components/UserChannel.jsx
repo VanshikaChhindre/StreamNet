@@ -44,7 +44,7 @@ const Channel = () => {
 
     if(isTweetApiSuccess && tweetApi){
       setTweets(tweetApi.data)
-      console.log(tweetApi.data)
+      console.log("tweets", tweetApi.data)
     }
   }, [videoApi, isVideoApiSuccess, tweetApi, isTweetApiSuccess]);
   }
@@ -99,7 +99,7 @@ const Channel = () => {
              </button>
            </div>
  
-           {option === "videos"? (
+           {/* {option === "videos"? (
            <section className='w-full h-14  flex items-center justify-center pt-5 px-3 z-40'>
            <Link to='/add-video' className='w-32 h-10 text-text bg-secondary flex items-center justify-center gap-2 rounded-full'>
            <AddIcon className='w-6 h-6'/>
@@ -113,7 +113,7 @@ const Channel = () => {
            <h5> Add Tweet</h5>
            </Link>
          </section>
-         )}
+         )} */}
  
             <div className='w-full min-h-[25rem] px-3'>
              {option === "videos"? (

@@ -101,7 +101,8 @@ const getUserVideos = asyncHandler(async(req, res)=>{
     const videos = await Video.find(query)
       .sort(sort)
       .skip((page - 1) * limit)
-      .limit(Number(limit));
+      .limit(Number(limit))
+      .populate('owner', 'username _id avatar');
 
       if(!videos){
         throw new ApiError(500, "Could not fetch videos")
