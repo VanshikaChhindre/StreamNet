@@ -148,7 +148,7 @@ const Signup = () => {
                    {errors.password && <p className="text-red-400">{errors.password.message}</p>}
                   </div>
 
-                  <button className='w-32 h-9 text-white bg-green-500 hover:bg-green-600 rounded-full mt-6 cursor-pointer' disabled={!isValid}>Login</button>
+                  <button className='w-32 h-9 text-white bg-green-500 hover:bg-green-600 rounded-full mt-6 cursor-pointer' disabled={!isValid}>Signup</button>
 
                   <div className='w-full flex gap-1 items-center justify-center mt-5'>
                     <h4>Already have an account?</h4>

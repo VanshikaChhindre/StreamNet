@@ -1,6 +1,6 @@
 import mongoose from "mongoose"
 import {Comment} from "../models/comment.model.js"
-import {ApiError} from "../utils/ApiError.js"
+import {ApiError} from "../utils/ApiErrors.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
@@ -8,14 +8,52 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 const getVideoComments = asyncHandler(async (req, res) => {
     //TODO: get all comments for a video
     const {videoId} = req.params
+    console.log(videoId)
     const {page = 1, limit = 10} = req.query
+    if (!videoId) {
+        throw new ApiError(400, "VideoId is required!");
+    }
+
+    // Set up the aggregation pipeline to fetch comments
+    const pipeline = [
+        { $match: { video: videoId } },  // Match comments for the specific videoId
+        { $sort: { createdAt: -1 } }     // Sort comments by newest first
+    ];
+
+    // Pagination options
+    const options = {
+        page: parseInt(page),
+        limit: parseInt(limit),
+    };
+
+    try {
+        const result = await Comment.aggregatePaginate(Comment.aggregate(pipeline), options);
+        console.log(result)
+
+        // Send the response in the required format using ApiResponse
+        res.status(200).json(
+            new ApiResponse(
+                200,
+                result.docs,  // Paginated comments
+                "Comments retrieved successfully!",
+                {
+                    totalComments: result.totalDocs, // Total comment count
+                    currentPage: result.page,         // Current page
+                    totalPages: result.totalPages     // Total pages
+                }
+            )
+        );
+    } catch (error) {
+        throw new ApiError(500, "Error retrieving comments");
+    }
 
 })
 
 const addComment = asyncHandler(async (req, res) => {
     // TODO: add a comment to a video
-    const { videoId } = req.params
     const { content } = req.body
+    const videoId = req.params.videoId || req.body.videoId;
+    
     const owner = req.user._id
 
     if(!videoId){
@@ -26,13 +64,18 @@ const addComment = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Comment is required!")
     }
 
-    const createdComment = Comment.create({
+    const createdComment = await Comment.create({
         content,
         owner,
         video : videoId
     })
 
-    res.status(200).json( new ApiResponse(200, createdComment, "Comment created successfully!"))
+    const populatedComment = await Comment.findById(createdComment._id).populate({
+        path: 'owner',
+        select: '_id username avatar'  // Only fetch username and avatar
+    });
+
+    res.status(200).json( new ApiResponse(200, populatedComment, "Comment created successfully!"))
 })
 
 const updateComment = asyncHandler(async (req, res) => {

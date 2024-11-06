@@ -1,38 +1,46 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import { useParams } from 'react-router-dom';
-import { useGetVideoByIdQuery, useAddVideoToHistoryMutation } from '../features/auth/authApiSlice';
+import { useGetVideoByIdQuery, useAddVideoToHistoryMutation, useAddCommentMutation, useVideoCommentsQuery } from '../features/auth/authApiSlice';
 import { useSelector } from 'react-redux';
 import { selectCurrentUser } from '../features/auth/authSlice';
+import { ArrowDownIcon, ArrowForwardIcon } from '../assets/navicons';
+import { format } from 'date-fns';
+import { useForm } from 'react-hook-form';
 
 
 const VideoPlayer = () => {
- /*  const user = useSelector(selectCurrentUser)
-  const { id } = useParams(); // Access the dynamic id from the URL
-   
-  const { data, isLoading, isError, isSuccess } = useGetVideoByIdQuery(id); 
-
   
-  if(isSuccess){
-    console.log(data)
-  }
 
-  
-    if(user){
-      const { data : userVideo, isSuccess : isUserVideoSuccess } = useAddVideoToHistoryMutation(id)
-
-      useEffect(()=>{
-      if(isUserVideoSuccess)(
-        console.log("Video added to history \n", userVideo)
-      )}, [])
-    }
- 
-
- */
+    const { register, handleSubmit, reset, formState: { errors, isValid} } = useForm()
     const user = useSelector(selectCurrentUser); // Get the current user from Redux
+    const userId = user?._id
     const { id } = useParams(); // Access the dynamic id from the URL
      
     const { data, isLoading, isError, isSuccess } = useGetVideoByIdQuery(id);
+    const { videoComments, isVideoCommentsSuccess } = useVideoCommentsQuery(id);
+    
+    const [openIndex, setOpenIndex] = useState(false)
     const [addVideoToHistory, { isSuccess: isUserVideoSuccess }] = useAddVideoToHistoryMutation(); // Destructure mutation
+    const [add, { isSuccess: isAddCommentSuccess }] = useAddCommentMutation();
+
+    const addComment = async(data) => {
+      const formData = {
+        content: data.content,
+        videoId: id,
+        owner: userId
+      }
+
+      try {
+        const response = await add(formData).unwrap();
+        console.log(response.data)  
+        console.log("comment added successfully.");
+
+        reset() 
+      } catch (error) {
+        console.log(error.message)
+      } 
+    } 
+    
   
     useEffect(() => {
       if (isSuccess) {
@@ -42,7 +50,11 @@ const VideoPlayer = () => {
       if (user && isSuccess) {
         addVideoToHistory(id); 
       }
-    }, [id, isSuccess, user, addVideoToHistory]); 
+
+      if(isVideoCommentsSuccess){
+        console.log("comments:", videoComments)
+      }
+    }, [id, isSuccess, user, addVideoToHistory, isVideoCommentsSuccess]); 
   
     useEffect(() => {
       if (isUserVideoSuccess) {
@@ -53,8 +65,8 @@ const VideoPlayer = () => {
   
  
   return (
-    <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end'>
-       <main className='w-[79vw] min-h-[100vh] bg-slate-900 flex mt-[4rem] p-4'>
+    <div className='w-full min-h-screen bg-pink-400 flex items-end justify-end '>
+       <main className='w-[79vw] min-h-[100vh] bg-slate-900 flex mt-[4rem] p-4 justify-center items-center z-40'>
         <section className='w-[50rem] min-h-[100vh] bg-slate-300 rounded-xl overflow-clip'>
         {isSuccess && data.data ? (
         <div>
@@ -66,13 +78,23 @@ const VideoPlayer = () => {
              src={data.data.videoFile.url} className='w-full h-auto'></video>
          
         </div>
-        <div className='w-full h-14  flex items-center p-4 text-2xl font-semibold'>
-          {data.data.title}
+        <button className='w-full min-h-20 bg-red-400 text-text flex py-4 px-6 justify-between items-center '
+        onClick={()=> setOpenIndex(!openIndex)}>
+          <span className='text-2xl font-semibold '>{data.data.title}</span>
+          {openIndex === true ? <ArrowDownIcon /> : <ArrowForwardIcon />}
+        </button>
+        <div className={`w-full min-h-20 p-5 bg-slate-700 flex-col ${openIndex === true ? 'flex' : 'hidden'}`}>
+          <span>{data.data.description}</span>
+          <span> {format(new Date(data.data.createdAt), 'dd-MM-yyyy, HH:mm aa')}</span>
         </div>
-        <div>
-          {data.data.description}
-          {data.data.createdAt}
-        </div> 
+        <div className='w-full min-h-64 p-5 bg-yellow-300'>
+          <form className='w-full flex gap-2' onSubmit={handleSubmit(addComment)}>
+            <input className='w-[90%] h-10 text-black outline-none p-1' placeholder='add comment'
+            {...register("content", { required: true })}></input>
+            <button type= 'submit' className='w-[10%] h-10 rounded-md bg-slate-500'>Add</button>
+          </form>
+        </div>
+       
         </div>
          ) : (
           <div>Loading...</div>

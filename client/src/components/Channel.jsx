@@ -58,7 +58,7 @@ const Channel = () => {
        <main className='w-full md:w-[79vw] min-h-[100vh] bg-background text-text flex flex-col'>
         <section className='w-full h-[25rem] bg-background text-text mt-[4rem] flex flex-col'>
           <span className='w-full h-[50%] bg-cover bg-center flex items-center justify-center' 
-          style={{backgroundImage: `url(${user?.coverImage ? user.coverImage : coverImageDefault})`}}
+          style={{backgroundImage: `url(${user?.coverImage ? user.coverImage.url : coverImageDefault})`}}
           ></span>
           <span className='w-full h-[50%]  flex'>
             <div className='w-1/4 h-full  flex items-center justify-center'>

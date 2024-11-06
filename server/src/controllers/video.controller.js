@@ -181,6 +181,10 @@ const getVideoById = asyncHandler(async (req, res) => {
     }
 
     const video = await Video.findById(videoId)
+    .populate({
+        path: 'owner', // Assuming 'owner' is the reference field
+        select: '_id avatar username email', // Select only the fields you need
+    });
 
     if(!video){
         throw new ApiError(404,"video not found")

@@ -96,7 +96,20 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
         allTweets : builder.query({
           query: () => `/api/v1/tweets/all-tweets`,
-        })
+        }),
+
+        addComment : builder.mutation({
+          query: (formData) => ({
+            url: `/api/v1/comments/add-comment`,
+            method: 'POST',
+            body: formData
+          }),
+         
+        }),
+
+        videoComments : builder.query({
+          query: (id) => `/api/v1/comments/video-comments/${id}`,
+        }),
        
       }),
     });
@@ -119,7 +132,9 @@ export const {
   useUpdateDetailsMutation,
   useCreateTweetMutation,
   useUserTweetsQuery,
-  useAllTweetsQuery
+  useAllTweetsQuery,
+  useAddCommentMutation,
+  useVideoCommentsQuery
 
 } = authApiSlice;
 
