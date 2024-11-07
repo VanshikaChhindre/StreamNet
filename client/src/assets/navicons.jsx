@@ -11,6 +11,9 @@ import { GoPencil as EditIcon } from "react-icons/go";
 import { IoIosArrowForward as ArrowForwardIcon } from "react-icons/io";
 import { IoIosArrowDown as ArrowDownIcon } from "react-icons/io";
 
+import { BiLike as LikeIcon} from "react-icons/bi";
+import { BiSolidLike as SolidLikeIcon} from "react-icons/bi";
+
 export { 
     LightMode,
     NightMode,
@@ -22,5 +25,7 @@ export {
     SettingsIcon,
     EditIcon,
     ArrowForwardIcon,
-    ArrowDownIcon
+    ArrowDownIcon,
+    LikeIcon,
+    SolidLikeIcon
 }

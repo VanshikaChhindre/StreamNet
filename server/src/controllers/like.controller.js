@@ -12,7 +12,7 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         throw new ApiError(400, "Invalid Video ID.");
     }
 
-    if(!likedBy){
+    if(!user){
         throw new ApiError(400, "User not found.")
     }
 
@@ -29,6 +29,31 @@ const toggleVideoLike = asyncHandler(async (req, res) => {
         res.status(200).json(new ApiResponse(200, newLike, "Like added successfully"));
     }
     //TODO: toggle like on video
+})
+
+const checkLike = asyncHandler(async(req, res)=>{
+   
+        const { videoId } = req.params;
+        const user = req.user._id;
+    
+        if (!videoId || !isValidObjectId(videoId)) {
+            throw new ApiError(400, "Invalid Video ID.");
+        }
+    
+        const existingLike = await Like.findOne({ video: videoId, likedBy: user });
+        console.log(existingLike)
+        res.status(200).json(new ApiResponse(200, {isLiked: !!existingLike}, "Like data fetched"));
+
+})
+
+const getVideoLikes = asyncHandler(async(req, res)=>{
+    const {videoId} = req.params
+    if(!videoId){
+        throw new ApiError(400, "Video Id is required!");
+    }
+
+    const totalDocs = await Like.countDocuments({video : videoId})
+    return res.status(200).json( new ApiResponse(200, {totalDocs}, "Total Likes fetched successfully!"))
 })
 
 const toggleCommentLike = asyncHandler(async (req, res) => {
@@ -110,6 +135,8 @@ const getLikedVideos = asyncHandler(async (req, res) => {
 
 export {
     toggleCommentLike,
+    checkLike,
+    getVideoLikes,
     toggleTweetLike,
     toggleVideoLike,
     getLikedVideos

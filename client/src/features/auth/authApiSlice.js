@@ -1,5 +1,6 @@
 import { BsBuildingFill } from "react-icons/bs";
 import { apiSlice } from "../../app/api/apiSlice";
+import { checkLike } from "../../../../server/src/controllers/like.controller";
 
 export const authApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -110,6 +111,21 @@ export const authApiSlice = apiSlice.injectEndpoints({
         videoComments : builder.query({
           query: (id) => `/api/v1/comments/video-comments/${id}`,
         }),
+
+        addVideoLike : builder.mutation({
+          query: (videoId) => ({
+            url: `/api/v1/likes/like-video/${videoId}`,
+            method: 'POST',
+          }),
+        }),
+
+        checkVideoLike : builder.query({
+          query: (id) => `/api/v1/likes/check-video-like/${id}`
+        }),
+
+        totalVideoLikes : builder.query({
+          query: (id) => `/api/v1/likes/total-video-likes/${id}`
+        }),
        
       }),
     });
@@ -134,7 +150,10 @@ export const {
   useUserTweetsQuery,
   useAllTweetsQuery,
   useAddCommentMutation,
-  useVideoCommentsQuery
+  useVideoCommentsQuery,
+  useAddVideoLikeMutation,
+  useCheckVideoLikeQuery,
+  useTotalVideoLikesQuery
 
 } = authApiSlice;
 

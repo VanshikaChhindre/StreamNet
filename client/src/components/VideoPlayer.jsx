@@ -9,11 +9,14 @@ import {
   useAddVideoToHistoryMutation, 
   useAddCommentMutation,
   useUserChannelQuery, 
-  useVideoCommentsQuery 
+  useVideoCommentsQuery,
+  useAddVideoLikeMutation,
+  useCheckVideoLikeQuery,
+  useTotalVideoLikesQuery
 } from '../features/auth/authApiSlice';
 
 import { selectCurrentUser } from '../features/auth/authSlice';
-import { ArrowDownIcon, ArrowForwardIcon } from '../assets/navicons';
+import { ArrowDownIcon, ArrowForwardIcon, LikeIcon, SolidLikeIcon } from '../assets/navicons';
 
 const VideoPlayer = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -26,14 +29,19 @@ const VideoPlayer = () => {
   const [totalComments, setTotalComments] = useState(0)
   const [username, setUsername] = useState(null);
   const [videoOwner, setVideoOwner] = useState({})
+  const [videoLike, setVideoLike] = useState(null)
+  const [totalVideoLikes, setTotalVideoLikes] = useState(0)
 
   const { data: videoData, isSuccess: isVideoLoaded } = useGetVideoByIdQuery(id);
   const { data: videoCommentsData, isSuccess: areCommentsLoaded } = useVideoCommentsQuery(id);
+  const { data: videoLikeData, isSuccess: videoLikeLoaded } = useCheckVideoLikeQuery(id);
+  const { data: videoLikes, isSuccess: isVideoLikesLoaded } = useTotalVideoLikesQuery(id);
   const { data: ownerChannelData, isSuccess: channelLoaded } = useUserChannelQuery(username, {
     skip: !username // Skip fetching if username is null
   });
   const [addVideoToHistory] = useAddVideoToHistoryMutation();
   const [addComment] = useAddCommentMutation();
+  const [addVideoLike] = useAddVideoLikeMutation();
 
 
   const handleAddComment = async (commentData) => {
@@ -48,11 +56,42 @@ const VideoPlayer = () => {
     }
   };
 
+  const handleVideoLike = async() => {
+    try {
+      const response = await addVideoLike(id).unwrap();
+      console.log(response)
+      if (response.data != null) {
+        setVideoLike(true); // Video liked, set videoLike to true
+        setTotalVideoLikes((prevTotal) => prevTotal + 1); 
+      } else {
+        setVideoLike(false); // Video unliked, set videoLike to false
+        setTotalVideoLikes((prevTotal) => prevTotal - 1);
+      }
+      
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
   useEffect(() => {
     if (isVideoLoaded) {
       console.log('Video data:', videoData);
       setUsername(videoData.data.owner.username);
       if (user) addVideoToHistory(id);
+    }
+
+    if(videoLikeLoaded){
+      console.log("like details:", videoLikeData.data)
+      if(videoLikeData.data.isLiked){
+        setVideoLike(true)
+      } else {
+        setVideoLike(false)
+      }
+    }
+
+    if(isVideoLikesLoaded){
+      console.log("totalLikes:", videoLikes.data)
+      setTotalVideoLikes(videoLikes.data.totalDocs)
     }
 
     if(channelLoaded){
@@ -65,7 +104,8 @@ const VideoPlayer = () => {
       setTotalComments(videoCommentsData.data.totalDocs)
       setComments(videoCommentsData.data.docs);
     }
-  }, [id, isVideoLoaded, user, areCommentsLoaded, channelLoaded, videoCommentsData, addVideoToHistory]);
+  }, [id, isVideoLoaded, user, areCommentsLoaded, channelLoaded, videoCommentsData, isVideoLikesLoaded, addVideoToHistory]);
+  
 
   return (
     <div className="w-full min-h-screen bg-background flex items-end justify-end">
@@ -86,10 +126,18 @@ const VideoPlayer = () => {
               
               {/* Video Title and Description */}
               <div
-                className="w-full min-h-10 bg-background border-b border-t border-gray-700 text-text flex py-4 px-6 justify-between items-center"
+                className="w-full min-h-28 bg-background border-b border-t border-gray-700 text-text flex pt-2 pb-4 px-6 flex-col"
               >
-                <span className="text-2xl font-semibold">{videoData.data.title}</span>
-                <button onClick={() => setDescriptionOpen(!isDescriptionOpen)}>{isDescriptionOpen ? <ArrowDownIcon /> : <ArrowForwardIcon />}</button>
+                <div className='w-full flex h-8  justify-between items-center'>
+                  <span className="text-2xl font-semibold">{videoData.data.title}</span>
+                  <button onClick={() => setDescriptionOpen(!isDescriptionOpen)}>{isDescriptionOpen ? <ArrowDownIcon /> : <ArrowForwardIcon />}</button>
+                </div>
+                <div className='w-full h-18 flex items-center justify-center gap-2'>
+                  <button className='w-14 h-14 border border-gray-700 rounded-full flex items-center justify-center'
+                  onClick={handleVideoLike}> 
+                  {videoLike? <SolidLikeIcon className='w-6 h-6' /> : <LikeIcon className='w-6 h-6' />}</button>
+                  <span>{totalVideoLikes}</span>
+                </div>
               </div>
               {isDescriptionOpen && (
                 <div className="w-full min-h-20 px-5 py-2 bg-background text-text flex flex-col border-b border-gray-700">
@@ -129,6 +177,7 @@ const VideoPlayer = () => {
 
               {/* Comment Section */}
               <div className="w-full min-h-64 p-5 flex flex-col gap-3 bg-background">
+              <h2 className='h-8 text-text text-xl font-semibold'>Comments ( {totalComments} )</h2>
                 {/* Comment Form */}
                 <form className="w-full flex gap-2" onSubmit={handleSubmit(handleAddComment)}>
                   <input
@@ -141,7 +190,6 @@ const VideoPlayer = () => {
 
                 {/* Display Comments */}
                 <div className="w-full min-h-44  py-2 flex flex-col gap-2">
-                  <h2 className='h-8 text-text text-xl font-semibold'>Comments ( {totalComments} )</h2>
                   {comments.map((comment, index) => (
                     <div 
                       key={index} 
