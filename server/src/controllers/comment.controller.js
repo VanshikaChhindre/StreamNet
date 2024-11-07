@@ -8,16 +8,34 @@ import {asyncHandler} from "../utils/asyncHandler.js"
 const getVideoComments = asyncHandler(async (req, res) => {
     //TODO: get all comments for a video
     const {videoId} = req.params
-    console.log(videoId)
     const {page = 1, limit = 10} = req.query
     if (!videoId) {
         throw new ApiError(400, "VideoId is required!");
     }
 
     // Set up the aggregation pipeline to fetch comments
+    const videoObjectId = new mongoose.Types.ObjectId(videoId);
     const pipeline = [
-        { $match: { video: videoId } },  // Match comments for the specific videoId
-        { $sort: { createdAt: -1 } }     // Sort comments by newest first
+        { $match: { video: videoObjectId } },  // Match comments for the specific videoId
+        { $sort: { createdAt: -1 } },     // Sort comments by newest first
+        {
+            $lookup: {
+                from: "users",                 // Collection to join (User collection)
+                localField: "owner",           // Field from Comment collection
+                foreignField: "_id",           // Field from User collection
+                as: "owner"                // Output array with user info
+            }
+        },
+        { $unwind: "$owner" },             // Unwind to convert ownerInfo array into an object
+        {
+            $project: {
+                content: 1,
+                createdAt: 1,
+                "owner._id": 1,            // Include owner's id
+                "owner.username": 1,       // Include owner's username
+                "owner.avatar": 1          // Include owner's avatar
+            }
+        }
     ];
 
     // Pagination options
@@ -28,13 +46,12 @@ const getVideoComments = asyncHandler(async (req, res) => {
 
     try {
         const result = await Comment.aggregatePaginate(Comment.aggregate(pipeline), options);
-        console.log(result)
 
         // Send the response in the required format using ApiResponse
         res.status(200).json(
             new ApiResponse(
                 200,
-                result.docs,  // Paginated comments
+                result,  // Paginated comments
                 "Comments retrieved successfully!",
                 {
                     totalComments: result.totalDocs, // Total comment count
