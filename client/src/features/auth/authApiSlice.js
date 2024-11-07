@@ -126,6 +126,13 @@ export const authApiSlice = apiSlice.injectEndpoints({
         totalVideoLikes : builder.query({
           query: (id) => `/api/v1/likes/total-video-likes/${id}`
         }),
+
+        toggleSubscription : builder.mutation({
+          query: (channelId) => ({
+            url: `/api/v1/subscription//toggle-subscription/${channelId}`,
+            method: 'POST',
+          }),
+        }),
        
       }),
     });
@@ -153,7 +160,8 @@ export const {
   useVideoCommentsQuery,
   useAddVideoLikeMutation,
   useCheckVideoLikeQuery,
-  useTotalVideoLikesQuery
+  useTotalVideoLikesQuery,
+  useToggleSubscriptionMutation
 
 } = authApiSlice;
 

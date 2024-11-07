@@ -12,7 +12,8 @@ import {
   useVideoCommentsQuery,
   useAddVideoLikeMutation,
   useCheckVideoLikeQuery,
-  useTotalVideoLikesQuery
+  useTotalVideoLikesQuery,
+  useToggleSubscriptionMutation
 } from '../features/auth/authApiSlice';
 
 import { selectCurrentUser } from '../features/auth/authSlice';
@@ -28,6 +29,7 @@ const VideoPlayer = () => {
   const [comments, setComments] = useState([]);
   const [totalComments, setTotalComments] = useState(0)
   const [username, setUsername] = useState(null);
+  const [channelId, setChannelId] = useState(null);
   const [videoOwner, setVideoOwner] = useState({})
   const [videoLike, setVideoLike] = useState(null)
   const [totalVideoLikes, setTotalVideoLikes] = useState(0)
@@ -42,6 +44,7 @@ const VideoPlayer = () => {
   const [addVideoToHistory] = useAddVideoToHistoryMutation();
   const [addComment] = useAddCommentMutation();
   const [addVideoLike] = useAddVideoLikeMutation();
+  const [toggleSubscription] = useToggleSubscriptionMutation();
 
 
   const handleAddComment = async (commentData) => {
@@ -73,10 +76,21 @@ const VideoPlayer = () => {
     }
   }
 
+  const handleSubscription = async() => {
+    try {
+      const response = await toggleSubscription(channelId).unwrap();
+      console.log(response)
+      
+    } catch (error) {
+      console.log(error.message)
+    }
+  }
+
   useEffect(() => {
     if (isVideoLoaded) {
       console.log('Video data:', videoData);
       setUsername(videoData.data.owner.username);
+      setChannelId(videoData.data.owner._id)
       if (user) addVideoToHistory(id);
     }
 
@@ -170,7 +184,8 @@ const VideoPlayer = () => {
                         </div>
                       </div>
                 </span>
-                <button className='w-[20%] h-10 bg-red-700 rounded-md flex items-center justify-center'>
+                <button className='w-[20%] h-10 bg-red-700 rounded-md flex items-center justify-center'
+                onClick={handleSubscription}>
                   Subscribe
                 </button>
               </div>
