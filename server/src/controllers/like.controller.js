@@ -41,7 +41,6 @@ const checkLike = asyncHandler(async(req, res)=>{
         }
     
         const existingLike = await Like.findOne({ video: videoId, likedBy: user });
-        console.log(existingLike)
         res.status(200).json(new ApiResponse(200, {isLiked: !!existingLike}, "Like data fetched"));
 
 })

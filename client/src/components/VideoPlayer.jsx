@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { useForm } from 'react-hook-form';
 import { format } from 'date-fns';
-
+import { Link } from 'react-router-dom';
 import { 
   useGetVideoByIdQuery, 
   useAddVideoToHistoryMutation, 
@@ -13,7 +13,8 @@ import {
   useAddVideoLikeMutation,
   useCheckVideoLikeQuery,
   useTotalVideoLikesQuery,
-  useToggleSubscriptionMutation
+  useToggleSubscriptionMutation,
+  useCheckUserSubscribedQuery
 } from '../features/auth/authApiSlice';
 
 import { selectCurrentUser } from '../features/auth/authSlice';
@@ -32,12 +33,14 @@ const VideoPlayer = () => {
   const [channelId, setChannelId] = useState(null);
   const [videoOwner, setVideoOwner] = useState({})
   const [videoLike, setVideoLike] = useState(null)
+  const [isSubscribed, setIsSubscribed] = useState(null)
   const [totalVideoLikes, setTotalVideoLikes] = useState(0)
 
   const { data: videoData, isSuccess: isVideoLoaded } = useGetVideoByIdQuery(id);
   const { data: videoCommentsData, isSuccess: areCommentsLoaded } = useVideoCommentsQuery(id);
   const { data: videoLikeData, isSuccess: videoLikeLoaded } = useCheckVideoLikeQuery(id);
   const { data: videoLikes, isSuccess: isVideoLikesLoaded } = useTotalVideoLikesQuery(id);
+  const { data: userSubscribed, isSuccess: isUserSubscribedLoaded } = useCheckUserSubscribedQuery(id);
   const { data: ownerChannelData, isSuccess: channelLoaded } = useUserChannelQuery(username, {
     skip: !username // Skip fetching if username is null
   });
@@ -79,7 +82,12 @@ const VideoPlayer = () => {
   const handleSubscription = async() => {
     try {
       const response = await toggleSubscription(channelId).unwrap();
-      console.log(response)
+      console.log("subscription button", response)
+      if (response.data != null) {
+        setIsSubscribed(true); // Video liked, set videoLike to true
+      } else {
+        setIsSubscribed(false); // Video unliked, set videoLike to false
+      }
       
     } catch (error) {
       console.log(error.message)
@@ -106,6 +114,15 @@ const VideoPlayer = () => {
     if(isVideoLikesLoaded){
       console.log("totalLikes:", videoLikes.data)
       setTotalVideoLikes(videoLikes.data.totalDocs)
+    }
+
+    if(isUserSubscribedLoaded){
+      console.log("subscribed", userSubscribed)
+      if(userSubscribed.data.isSubscribed){
+        setIsSubscribed(true)
+      } else {
+        setIsSubscribed(false)
+      }
     }
 
     if(channelLoaded){
@@ -162,6 +179,8 @@ const VideoPlayer = () => {
               )}
               {/*user profile*/}
               <div className='w-full h-20 bg-background px-5 py-4 text-text flex'>
+              <div className="w-[80%] min-h-[5rem]">
+              <Link to={user && user._id === videoOwner._id ? `/your-channel/${user._id}` : `/user-channel/${videoOwner.username}`}>  
                 <span 
                 className="w-[80%] min-h-[5rem] flex items-start gap-2 bg-secondary/25 text-text"
                 >
@@ -184,23 +203,30 @@ const VideoPlayer = () => {
                         </div>
                       </div>
                 </span>
-                <button className='w-[20%] h-10 bg-red-700 rounded-md flex items-center justify-center'
+                </Link>
+                </div>
+                <button className={`w-[20%] h-10 ${isSubscribed? "bg-gray-600" : "bg-red-700 hover:bg-red-600"} text-white rounded-md flex items-center justify-center`}
                 onClick={handleSubscription}>
-                  Subscribe
+                  {isSubscribed? "Subscribed ✔" : "Subscribe"}
                 </button>
               </div>
 
-              {/* Comment Section */}
-              <div className="w-full min-h-64 p-5 flex flex-col gap-3 bg-background">
+              
+            </div>
+          ) : (
+            <div>Loading...</div>
+          )}
+          {/* Comment Section */}
+          <div className="w-full min-h-64 p-5 flex flex-col gap-3 bg-background">
               <h2 className='h-8 text-text text-xl font-semibold'>Comments ( {totalComments} )</h2>
                 {/* Comment Form */}
                 <form className="w-full flex gap-2" onSubmit={handleSubmit(handleAddComment)}>
                   <input
-                    className="w-[90%] h-10 text-black outline-none p-1"
+                    className="w-[90%] h-10 text-black outline-none rounded-md p-1 border border-accent"
                     placeholder="Add a comment"
                     {...register("content", { required: true })}
                   />
-                  <button type="submit" className="w-[10%] h-10 rounded-md bg-slate-500">Add</button>
+                  <button type="submit" className="w-[10%] h-10 rounded-md bg-accent">Add</button>
                 </form>
 
                 {/* Display Comments */}
@@ -212,7 +238,8 @@ const VideoPlayer = () => {
                     >
                       {/* User Avatar */}
                       <div className="w-20 h-20 flex items-start justify-center">
-                        <span 
+                        <Link
+                          to={user && user._id === comment.owner._id ? `/your-channel/${user._id}` : `/user-channel/${comment.owner.username}`}
                           className="w-12 h-12 rounded-full bg-cover bg-center"
                           style={{ backgroundImage: `url('${comment.owner?.avatar?.url}')` }} 
                         />
@@ -220,12 +247,13 @@ const VideoPlayer = () => {
 
                       {/* Comment Details */}
                       <div className="w-[62rem] h-full flex flex-1 flex-col">
-                        <div className="w-60 h-6 flex gap-2 text-primary">
+                        <Link  to={user && user._id === comment.owner._id ? `/your-channel/${user._id}` : `/user-channel/${comment.owner.username}`}
+                         className="w-60 h-6 flex gap-2 text-primary">
                           <span>@{comment.owner.username}</span>
                           <p className="h-full text-xs text-gray-500 flex items-center justify-center">
                             {format(new Date(comment.createdAt), 'dd-MM-yyyy, HH:mm aa')}
                           </p>
-                        </div>
+                        </Link>
                         <div className="w-full min-h-8 flex flex-col">
                           <p className="w-full min-h-8 flex items-start">{comment.content}</p>
                         </div>
@@ -234,10 +262,6 @@ const VideoPlayer = () => {
                   ))}
                 </div>
               </div>
-            </div>
-          ) : (
-            <div>Loading...</div>
-          )}
         </section>
       </main>
     </div>

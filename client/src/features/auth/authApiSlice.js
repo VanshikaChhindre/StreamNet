@@ -129,10 +129,14 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
         toggleSubscription : builder.mutation({
           query: (channelId) => ({
-            url: `/api/v1/subscription//toggle-subscription/${channelId}`,
+            url: `/api/v1/subscription/toggle-subscription/${channelId}`,
             method: 'POST',
           }),
         }),
+
+        checkUserSubscribed : builder.query({
+          query : (channelId) => `/api/v1/subscription/check-user-subscribed/${channelId}`
+        })
        
       }),
     });
@@ -161,7 +165,8 @@ export const {
   useAddVideoLikeMutation,
   useCheckVideoLikeQuery,
   useTotalVideoLikesQuery,
-  useToggleSubscriptionMutation
+  useToggleSubscriptionMutation,
+  useCheckUserSubscribedQuery
 
 } = authApiSlice;
 
