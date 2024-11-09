@@ -4,7 +4,8 @@ import { Route, Routes } from 'react-router-dom'
 import { Home, Channel, Video, VideoPlayer, WatchHistory, Settings, Tweet, UserChannel} from './components/exports'
 import Login from './features/Login'
 import Signup from './features/Signup'
-
+import AddToPlaylist from './components/AddToPlaylist'
+import CreatePlaylist from './components/CreatePlaylist'
 
 
 function App() {
@@ -20,6 +21,9 @@ function App() {
         <Route path='/your-channel/:userId?' element={<Channel/>}/>
         <Route path='/user-channel/:username' element={<UserChannel/>}/>
         <Route path='/watch-history' element={<WatchHistory/>}/>
+        <Route path='/add-to-playlist/:videoId' element={<AddToPlaylist/>}>
+          <Route path='create-playlist' element={<CreatePlaylist/>}/>
+        </Route>
         <Route path='/settings' element={<Settings/>}/>
         <Route path='/add-video' element={<Video/>}/>
         <Route path='/add-tweet' element={<Tweet/>}/>

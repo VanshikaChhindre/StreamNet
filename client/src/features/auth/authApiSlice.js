@@ -136,7 +136,26 @@ export const authApiSlice = apiSlice.injectEndpoints({
 
         checkUserSubscribed : builder.query({
           query : (channelId) => `/api/v1/subscription/check-user-subscribed/${channelId}`
-        })
+        }),
+
+        createPlaylist : builder.mutation({
+          query: (formData) => ({
+            url: `/api/v1/playlists/create-playlist`,
+            method: 'POST',
+            body: formData
+          }),
+        }),
+
+        addVideoToPlaylist : builder.mutation({
+          query: (playlistId, videoId) => ({
+            url: `/api/v1/playlists/add-video-to-playlist/${playlistId}/${videoId}`,
+            method: 'POST',
+          }),
+        }),
+
+        getUserPlaylists : builder.query({
+          query : (userId) => `/api/v1/playlists/user-playlists/${userId}`
+        }),
        
       }),
     });
@@ -166,7 +185,10 @@ export const {
   useCheckVideoLikeQuery,
   useTotalVideoLikesQuery,
   useToggleSubscriptionMutation,
-  useCheckUserSubscribedQuery
+  useCheckUserSubscribedQuery,
+  useCreatePlaylistMutation,
+  useAddVideoToPlaylistMutation,
+  useGetUserPlaylistsQuery
 
 } = authApiSlice;
 

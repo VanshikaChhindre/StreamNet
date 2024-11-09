@@ -1,6 +1,6 @@
 import mongoose, {isValidObjectId} from "mongoose"
 import {Playlist} from "../models/playlist.model.js"
-import {ApiError} from "../utils/ApiError.js"
+import {ApiError} from "../utils/ApiErrors.js"
 import {ApiResponse} from "../utils/ApiResponse.js"
 import {asyncHandler} from "../utils/asyncHandler.js"
 
@@ -31,6 +31,7 @@ const createPlaylist = asyncHandler(async (req, res) => {
 
 const getUserPlaylists = asyncHandler(async (req, res) => {
     const {userId} = req.params
+    console.log(req.params)
     if(!userId || !isValidObjectId(userId)){
         throw new ApiError(400, "Invalid userId")
     }
@@ -67,9 +68,9 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
 
     const userPlaylists = await Playlist.aggregate(pipeline).exec();
 
-    if (!userPlaylists.length) {
+    /* if (!userPlaylists.length) {
         return res.status(404).json(new ApiResponse(404, null, "No playlists found for this user"));
-    }
+    }  */
 
     res.status(200).json(new ApiResponse(200, userPlaylists, "Playlists retrieved successfully"));
 });

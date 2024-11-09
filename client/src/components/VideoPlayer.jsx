@@ -14,11 +14,11 @@ import {
   useCheckVideoLikeQuery,
   useTotalVideoLikesQuery,
   useToggleSubscriptionMutation,
-  useCheckUserSubscribedQuery
+  useCheckUserSubscribedQuery,
 } from '../features/auth/authApiSlice';
 
 import { selectCurrentUser } from '../features/auth/authSlice';
-import { ArrowDownIcon, ArrowForwardIcon, LikeIcon, SolidLikeIcon } from '../assets/navicons';
+import { ArrowDownIcon, ArrowForwardIcon, LikeIcon, SolidLikeIcon, AddIcon } from '../assets/navicons';
 
 const VideoPlayer = () => {
   const { register, handleSubmit, reset } = useForm();
@@ -36,6 +36,7 @@ const VideoPlayer = () => {
   const [isSubscribed, setIsSubscribed] = useState(null)
   const [totalVideoLikes, setTotalVideoLikes] = useState(0)
 
+
   const { data: videoData, isSuccess: isVideoLoaded } = useGetVideoByIdQuery(id);
   const { data: videoCommentsData, isSuccess: areCommentsLoaded } = useVideoCommentsQuery(id);
   const { data: videoLikeData, isSuccess: videoLikeLoaded } = useCheckVideoLikeQuery(id);
@@ -44,11 +45,13 @@ const VideoPlayer = () => {
   const { data: ownerChannelData, isSuccess: channelLoaded } = useUserChannelQuery(username, {
     skip: !username // Skip fetching if username is null
   });
+ 
   const [addVideoToHistory] = useAddVideoToHistoryMutation();
   const [addComment] = useAddCommentMutation();
   const [addVideoLike] = useAddVideoLikeMutation();
   const [toggleSubscription] = useToggleSubscriptionMutation();
 
+  
 
   const handleAddComment = async (commentData) => {
     const newComment = { content: commentData.content, videoId: id, owner: userId };
@@ -157,17 +160,26 @@ const VideoPlayer = () => {
               
               {/* Video Title and Description */}
               <div
-                className="w-full min-h-28 bg-background border-b border-t border-gray-700 text-text flex pt-2 pb-4 px-6 flex-col"
+                className="w-full min-h-28 bg-background border-b border-t border-gray-700 text-text flex py-2 px-6 flex-col"
               >
                 <div className='w-full flex h-8  justify-between items-center'>
                   <span className="text-2xl font-semibold">{videoData.data.title}</span>
                   <button onClick={() => setDescriptionOpen(!isDescriptionOpen)}>{isDescriptionOpen ? <ArrowDownIcon /> : <ArrowForwardIcon />}</button>
                 </div>
-                <div className='w-full h-18 flex items-center justify-center gap-2'>
-                  <button className='w-14 h-14 border border-gray-700 rounded-full flex items-center justify-center'
-                  onClick={handleVideoLike}> 
-                  {videoLike? <SolidLikeIcon className='w-6 h-6' /> : <LikeIcon className='w-6 h-6' />}</button>
-                  <span>{totalVideoLikes}</span>
+
+                {/*like and add to playlist */}
+                <div className='w-full h-20 flex items-center justify-between px-5 '>
+                  <div className='flex items-center justify-center gap-2'>
+                    <button className='w-12 h-12 border border-gray-700 rounded-full flex items-center justify-center'
+                    onClick={handleVideoLike}> 
+                    {videoLike? <SolidLikeIcon className='w-6 h-6' /> : <LikeIcon className='w-6 h-6' />}</button>
+                    <span>{totalVideoLikes}</span>
+                  </div>
+                  <div className='flex items-center justify-center gap-2'>
+                    <Link to={`/add-to-playlist/${id}`} className='w-28 h-10 text-text bg-secondary flex items-center justify-center gap-2 rounded-full'>
+                      <AddIcon className='w-6 h-6'/>
+                      <h5> Playlist </h5></Link>
+                  </div>
                 </div>
               </div>
               {isDescriptionOpen && (
@@ -177,6 +189,7 @@ const VideoPlayer = () => {
                   <span>Uploaded on : {format(new Date(videoData.data.createdAt), 'dd-MM-yyyy, HH:mm aa')}</span>
                 </div>
               )}
+
               {/*user profile*/}
               <div className='w-full h-20 bg-background px-5 py-4 text-text flex'>
               <div className="w-[80%] min-h-[5rem]">
