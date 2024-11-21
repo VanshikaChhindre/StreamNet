@@ -21,9 +21,8 @@ function App() {
         <Route path='/your-channel/:userId?' element={<Channel/>}/>
         <Route path='/user-channel/:username' element={<UserChannel/>}/>
         <Route path='/watch-history' element={<WatchHistory/>}/>
-        <Route path='/add-to-playlist/:videoId' element={<AddToPlaylist/>}>
-          <Route path='create-playlist' element={<CreatePlaylist/>}/>
-        </Route>
+        <Route path='/add-to-playlist/:videoId' element={<AddToPlaylist/>}/>
+        <Route path='/create-playlist/:videoId' element={<CreatePlaylist/>}/>
         <Route path='/settings' element={<Settings/>}/>
         <Route path='/add-video' element={<Video/>}/>
         <Route path='/add-tweet' element={<Tweet/>}/>

@@ -41,7 +41,10 @@ const VideoPlayer = () => {
   const { data: videoCommentsData, isSuccess: areCommentsLoaded } = useVideoCommentsQuery(id);
   const { data: videoLikeData, isSuccess: videoLikeLoaded } = useCheckVideoLikeQuery(id);
   const { data: videoLikes, isSuccess: isVideoLikesLoaded } = useTotalVideoLikesQuery(id);
-  const { data: userSubscribed, isSuccess: isUserSubscribedLoaded } = useCheckUserSubscribedQuery(id);
+  const { data: userSubscribed, isSuccess: isUserSubscribedLoaded } = useCheckUserSubscribedQuery(channelId, {
+    skip: !username // Skip fetching if username is null
+  });
+ 
   const { data: ownerChannelData, isSuccess: channelLoaded } = useUserChannelQuery(username, {
     skip: !username // Skip fetching if username is null
   });
@@ -119,6 +122,11 @@ const VideoPlayer = () => {
       setTotalVideoLikes(videoLikes.data.totalDocs)
     }
 
+    if(channelLoaded){
+      console.log("channel details fetched", ownerChannelData)
+      setVideoOwner(ownerChannelData.data)
+    }
+
     if(isUserSubscribedLoaded){
       console.log("subscribed", userSubscribed)
       if(userSubscribed.data.isSubscribed){
@@ -128,17 +136,13 @@ const VideoPlayer = () => {
       }
     }
 
-    if(channelLoaded){
-      console.log("channel details fetched", ownerChannelData)
-      setVideoOwner(ownerChannelData.data)
-    }
 
     if (areCommentsLoaded) {
       console.log("Comments:", videoCommentsData);
       setTotalComments(videoCommentsData.data.totalDocs)
       setComments(videoCommentsData.data.docs);
     }
-  }, [id, isVideoLoaded, user, areCommentsLoaded, channelLoaded, videoCommentsData, isVideoLikesLoaded, addVideoToHistory]);
+  }, [id, isVideoLoaded, user, areCommentsLoaded, channelLoaded, videoCommentsData, isVideoLikesLoaded, isUserSubscribedLoaded, addVideoToHistory]);
   
 
   return (

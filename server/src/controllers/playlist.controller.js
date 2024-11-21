@@ -29,8 +29,9 @@ const createPlaylist = asyncHandler(async (req, res) => {
     //TODO: create playlist
 })
 
-const getUserPlaylists = asyncHandler(async (req, res) => {
+const getUserPlaylistsVideos = asyncHandler(async (req, res) => {
     const {userId} = req.params
+    
     console.log(req.params)
     if(!userId || !isValidObjectId(userId)){
         throw new ApiError(400, "Invalid userId")
@@ -71,6 +72,27 @@ const getUserPlaylists = asyncHandler(async (req, res) => {
     /* if (!userPlaylists.length) {
         return res.status(404).json(new ApiResponse(404, null, "No playlists found for this user"));
     }  */
+
+    res.status(200).json(new ApiResponse(200, userPlaylists, "Playlists retrieved successfully"));
+});
+
+const getUserPlaylists = asyncHandler(async (req, res) => {
+    const { userId } = req.params;
+    
+    if (!userId || !isValidObjectId(userId)) {
+        throw new ApiError(400, "Invalid userId");
+    }
+
+    const pipeline = [
+        { $match: { owner: new mongoose.Types.ObjectId(userId) } }, // Match playlists where owner is the user
+        { $project: { name: 1, description: 1 } } // Project only name and description for debugging
+    ];
+
+    const userPlaylists = await Playlist.aggregate(pipeline).exec();
+
+    if (!userPlaylists.length) {
+        return res.status(404).json(new ApiResponse(404, [], "No playlists found for this user"));
+    }
 
     res.status(200).json(new ApiResponse(200, userPlaylists, "Playlists retrieved successfully"));
 });
@@ -181,6 +203,7 @@ const updatePlaylist = asyncHandler(async (req, res) => {
 
 export {
     createPlaylist,
+    getUserPlaylistsVideos,
     getUserPlaylists,
     getPlaylistById,
     addVideoToPlaylist,

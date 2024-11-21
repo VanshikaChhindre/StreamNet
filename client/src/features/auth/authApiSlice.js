@@ -147,7 +147,7 @@ export const authApiSlice = apiSlice.injectEndpoints({
         }),
 
         addVideoToPlaylist : builder.mutation({
-          query: (playlistId, videoId) => ({
+          query: ({playlistId, videoId}) => ({
             url: `/api/v1/playlists/add-video-to-playlist/${playlistId}/${videoId}`,
             method: 'POST',
           }),
