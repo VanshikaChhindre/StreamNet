@@ -1,6 +1,6 @@
-import { BsBuildingFill } from "react-icons/bs";
+
 import { apiSlice } from "../../app/api/apiSlice";
-import { checkLike } from "../../../../server/src/controllers/like.controller";
+
 
 export const authApiSlice = apiSlice.injectEndpoints({
     endpoints: (builder) => ({
@@ -156,6 +156,10 @@ export const authApiSlice = apiSlice.injectEndpoints({
         getUserPlaylists : builder.query({
           query : (userId) => `/api/v1/playlists/user-playlists/${userId}`
         }),
+
+        getUserPlaylistsVideos : builder.query({
+          query : (userId) => `/api/v1/playlists/user-playlists-videos/${userId}`
+        })
        
       }),
     });
@@ -188,7 +192,8 @@ export const {
   useCheckUserSubscribedQuery,
   useCreatePlaylistMutation,
   useAddVideoToPlaylistMutation,
-  useGetUserPlaylistsQuery
+  useGetUserPlaylistsQuery,
+  useGetUserPlaylistsVideosQuery
 
 } = authApiSlice;
 

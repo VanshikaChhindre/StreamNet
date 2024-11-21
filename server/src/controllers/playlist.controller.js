@@ -32,13 +32,15 @@ const createPlaylist = asyncHandler(async (req, res) => {
 const getUserPlaylistsVideos = asyncHandler(async (req, res) => {
     const {userId} = req.params
     
-    console.log(req.params)
+    console.log("userid", req.params)
     if(!userId || !isValidObjectId(userId)){
         throw new ApiError(400, "Invalid userId")
     }
 
     const pipeline = [
-        { $match: { owner: userId } }, // Match playlists where owner is the user
+        { 
+            $match: { owner: new mongoose.Types.ObjectId(userId) } // Ensure userId is an ObjectId
+        },
         {
             $lookup: {
                 from: "videos", // Join with the "videos" collection
@@ -49,29 +51,45 @@ const getUserPlaylistsVideos = asyncHandler(async (req, res) => {
         },
         {
             $addFields: {
-                // Sort videos to get the first added video
-                sortedVideos: { $slice: ["$videos", 1] }
+                // Add videoCount field
+                videoCount: { $size: "$videos" },
+                videoIds: "$videos._id"
+            }
+        },
+        {
+            $unwind: { 
+                path: "$videos", // Unwind the videos array to handle individual videos
+                preserveNullAndEmptyArrays: true // Keep playlists with no videos
+            }
+        },
+        {
+            $lookup: {
+                from: "videos", // To access the thumbnail property of video
+                localField: "videos._id", 
+                foreignField: "_id", 
+                as: "videoDetails" // Store the joined video details in videoDetails
             }
         },
         {
             $addFields: {
-                // Extract thumbnail from the first video
-                thumbnail: { $arrayElemAt: ["$sortedVideos.thumbnail", 0] }
+                thumbnail: { $arrayElemAt: ["$videoDetails.thumbnail", 0] } // Extract the thumbnail from videoDetails
             }
         },
         {
-            $addFields: {
-                videoCount: { $size: "$videos" } // Add videoCount field
+            $project: {
+                videos: 0, // Remove the full video details array to keep the response clean
+                videoDetails: 0 // Remove the videoDetails array as well
             }
-        },
-        { $project: { videos: 0, sortedVideos: 0 } } // Clean up the result
+        }
     ];
 
     const userPlaylists = await Playlist.aggregate(pipeline).exec();
 
-    /* if (!userPlaylists.length) {
-        return res.status(404).json(new ApiResponse(404, null, "No playlists found for this user"));
-    }  */
+    console.log(userPlaylists);
+
+    if (!userPlaylists.length) {
+        throw new ApiError(404, "No playlists or videos found");
+    }
 
     res.status(200).json(new ApiResponse(200, userPlaylists, "Playlists retrieved successfully"));
 });

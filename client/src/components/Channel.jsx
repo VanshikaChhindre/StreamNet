@@ -3,7 +3,12 @@ import { Link } from 'react-router-dom';
 import { useSelector } from 'react-redux'
 import { selectCurrentUser } from '../features/auth/authSlice';
 import { AddIcon } from '../assets/navicons';
-import { useUserChannelQuery, useUserVideosQuery, useUserTweetsQuery } from '../features/auth/authApiSlice';
+import { useUserChannelQuery, 
+         useUserVideosQuery, 
+         useUserTweetsQuery,
+        useGetUserPlaylistsVideosQuery, 
+        useGetUserPlaylistsQuery} 
+from '../features/auth/authApiSlice';
 import VideoCard from './VideoCard';
 import coverImageDefault from '../assets/coverImageDefault.avif' 
 import { formatDate } from 'date-fns';
@@ -14,6 +19,7 @@ const Channel = () => {
   const [userData, setUserData] = useState({})
   const [videos, setVideos] = useState([])
   const [tweets, setTweets] = useState([])
+  const [playlists, setPlaylists] = useState([])
 
   const formatDate = (isoString) => {
     const date = new Date(isoString);
@@ -25,6 +31,9 @@ const Channel = () => {
   const { data : userApi, isSuccess : isUserApiSuccess } = useUserChannelQuery(user.username)
   const { data : videoApi, isSuccess : isVideoApiSuccess } = useUserVideosQuery(user._id)
   const { data : tweetApi, isSuccess : isTweetApiSuccess } = useUserTweetsQuery(user._id)
+  const { data : playlistsApi, isSuccess : isPlaylistApiSuccess } = useGetUserPlaylistsQuery(user._id)
+  const { data : playlistsVideosApi, isSuccess : isPlaylistVideosApiSuccess } = useGetUserPlaylistsVideosQuery(user._id)
+  
 
   
   useEffect(() => {
@@ -44,7 +53,12 @@ const Channel = () => {
       setTweets(tweetApi.data)
       console.log(tweetApi.data)
     }
-  }, [videoApi, isVideoApiSuccess, tweetApi, isTweetApiSuccess]);
+
+    if(isPlaylistVideosApiSuccess && playlistsVideosApi){
+      setPlaylists(playlistsVideosApi.data)
+      console.log(playlistsVideosApi.data)
+    }
+  }, [videoApi, isVideoApiSuccess, tweetApi, isTweetApiSuccess, isPlaylistVideosApiSuccess, playlistsVideosApi]);
   }
 
 
@@ -85,14 +99,19 @@ const Channel = () => {
         </section>
         <section className='w-full min-h-[25rem]  flex flex-col'>
         <div className='w-full h-16 bg-background text-text flex'>
-            <button className='w-1/2 h-full flex items-center justify-center  z-40' onClick={()=>setOption("videos")}>
+            <button className='w-1/3 h-full flex items-center justify-center  z-40' onClick={()=>setOption("videos")}>
               <div className={`w-3/4 h-full flex items-center justify-center ${option === "videos"? 'border-b-2 border-accent' : ''}`}>
                   Videos
               </div>
             </button>
-            <button className='w-1/2 h-full flex items-center justify-center  z-40' onClick={()=>setOption("tweets")}>
+            <button className='w-1/3 h-full flex items-center justify-center  z-40' onClick={()=>setOption("tweets")}>
               <div className={`w-3/4 h-full flex items-center justify-center ${option === "tweets"? 'border-b-2 border-accent' : ''}`}>
                 Tweets
+                </div>
+            </button>
+            <button className='w-1/3 h-full flex items-center justify-center  z-40' onClick={()=>setOption("playlists")}>
+              <div className={`w-3/4 h-full flex items-center justify-center ${option === "playlists"? 'border-b-2 border-accent' : ''}`}>
+                Playlists
                 </div>
             </button>
           </div>
@@ -104,14 +123,16 @@ const Channel = () => {
           <h5> Add video</h5>
           </Link>
         </section>
-        ):(
+        ): option === "tweets"? (
           <section className='w-full h-14 flex items-center justify-center pt-5 px-3 z-40'>
            <Link to='/add-tweet' className='w-32 h-10 text-text bg-secondary flex items-center justify-center gap-2 rounded-full'>
           <AddIcon className='w-6 h-6'/>
           <h5> Add Tweet</h5>
           </Link>
         </section>
-        )}
+        ): option === "playlists"? (
+          <div></div>
+        ): null}
 
            <div className='w-full min-h-[25rem] px-3'>
             {option === "videos"? (
@@ -131,7 +152,7 @@ const Channel = () => {
              
          </div>
                 
-            ) : (
+            ) : option === "tweets" ? (
               <div className='w-full h-full flex flex-col gap-5 p-5 z-40'>
               {tweets.map((item, index)=>(
                 <card key={index} className='w-full min-h-[5rem] flex items-start bg-secondary/25 text-text'>
@@ -156,7 +177,31 @@ const Channel = () => {
               
                 ))}
                 </div>
-            )}
+            ) :  option === "playlists" ? (
+              <div className="w-full h-full flex flex-col gap-5 p-5 z-40">
+                {playlists.map((item, index) => (
+                  <div key={index} className="w-full h-[12rem] flex items-start justify-start bg-secondary text-text p-4 rounded-lg">
+                    <div className="w-80 h-full bg-white flex items-center relative">
+                      <span 
+                        className="w-full h-full bg-cover bg-center bg-green"
+                        style={{ backgroundImage: `url('${item?.thumbnail?.url}')` }}
+                      >
+                        {/* Overlay Div */}
+                        <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                          <span className="text-white text-lg">{item?.videoCount}</span>
+                        </div>
+                      </span>
+                    </div>
+                    <div className='w-1/2 h-full p-5 text-text flex flex-col'>
+                      <span className='w-full h-1/2 text-2xl'>{item.name}</span>
+                      <span className='w-full h-1/2 text-xl'>{item.description}</span>
+                    </div>
+                    
+                  </div>
+                ))} 
+              </div>
+            ) : null}
+          
            
           </div> 
 

@@ -1,6 +1,7 @@
 import { Router } from "express";
 import { 
     createPlaylist,
+    getUserPlaylistsVideos,
     getUserPlaylists,
     getPlaylistById,
     addVideoToPlaylist,
@@ -15,6 +16,7 @@ const router = Router()
 
 
 router.route("/create-playlist").post(verifyJWT, createPlaylist);
+router.route("/user-playlists-videos/:userId").get(verifyJWT, getUserPlaylistsVideos);
 router.route("/user-playlists/:userId").get(verifyJWT, getUserPlaylists);
 router.route("/playlist/:playlistId").get(verifyJWT, getPlaylistById);
 router.route("/add-video-to-playlist/:playlistId/:videoId").post(verifyJWT, addVideoToPlaylist);
