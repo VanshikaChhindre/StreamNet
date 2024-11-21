@@ -4,28 +4,10 @@ import cookieParser from "cookie-parser"
 
 const app = express()
 
-const allowedOrigins = [
-    "https://stream-net-phi.vercel.app",  // Your frontend URL
-    "https://stream-net-git-main-vanshikas-projects-dd60e8f1.vercel.app", // Preview 1 (if needed)
-    "https://stream-kzrp6m7wp-vanshikas-projects-dd60e8f1.vercel.app", // Preview 2 (if needed)
-    "http://localhost:5173"  // For local development
-  ];
-
-  app.use(cors({
-    origin: (origin, callback) => {
-      if (!origin || allowedOrigins.includes(origin)) {
-        callback(null, true); // Allow the request
-      } else {
-        callback(new Error("Not allowed by CORS")); // Deny the request
-      }
-    },
-    credentials: true, // Allow cookies if necessary
-  }));
-
-/* app.use(cors({
+app.use(cors({
     origin: process.env.CORS_ORIGIN,
     credentials: true
-})) */
+}))
 
 app.use(express.json({limit: "50mb"}))
 app.use(express.urlencoded({extended: true, limit: "50mb"}))
