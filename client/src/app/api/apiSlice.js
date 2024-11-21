@@ -2,7 +2,9 @@ import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react'
 import { logOut, setCredentials } from '../../features/auth/authSlice'
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: "http://localhost:4000",
+    /* baseUrl: "http://localhost:4000", */
+    baseUrl: "https://stream-net-backend.vercel.app/",
+    
     credentials: 'include',
     prepareHeaders: (headers, {getState}) => {
         const token = getState().auth.token
